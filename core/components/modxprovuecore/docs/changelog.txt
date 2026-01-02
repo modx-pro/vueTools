@@ -1,0 +1,17 @@
+Changelog for ModxProVueCore
+
+1.0.0-alpha1 (January 2026)
+============================
+- Initial alpha release
+- Vue 3.5.13 bundled as ES module
+- Pinia 3.0.1 bundled as ES module
+- PrimeVue 4.3.1 with Aura theme bundled as ES module
+- PrimeIcons 7.0.0 included
+- Import Map registration for browser module resolution
+- CSS isolation with .vueApp prefix (no conflicts with ExtJS)
+- Composables included:
+  - useApi: HTTP client for MODX API
+  - useLexicon: Lexicon accessor with parameter replacement
+  - useModx: Access to MODX config, user, permissions
+  - usePermission: Permission checking helper
+- VueCoreManager plugin for automatic Import Map registration

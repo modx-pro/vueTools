@@ -1,0 +1,38 @@
+{
+  "name": "modxprovuecore",
+  "version": "1.0.0-alpha.1",
+  "description": "Vue core stack for MODX Revolution 3.x components",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "build:vue": "cross-env BUILD_TARGET=vue vite build --config vite.config.vendor.js",
+    "build:pinia": "cross-env BUILD_TARGET=pinia vite build --config vite.config.vendor.js",
+    "build:primevue": "cross-env BUILD_TARGET=primevue vite build --config vite.config.vendor.js",
+    "build:vendor": "npm run clean:vendor && npm run build:vue && npm run build:pinia && npm run build:primevue",
+    "build:composables": "vite build --config vite.config.composables.js",
+    "build:all": "npm run build:vendor && npm run build:composables",
+    "clean:vendor": "rimraf assets/components/modxprovuecore/vendor",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@primevue/themes": "^4.3.1",
+    "pinia": "^3.0.1",
+    "primeicons": "^7.0.0",
+    "primevue": "^4.3.1",
+    "vue": "^3.5.13"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.2.1",
+    "cross-env": "^10.1.0",
+    "postcss": "^8.4.49",
+    "postcss-prefix-selector": "^2.1.0",
+    "rimraf": "^6.1.2",
+    "vite": "^6.0.7"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "author": "modx.pro",
+  "license": "MIT"
+}
