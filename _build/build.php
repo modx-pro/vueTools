@@ -26,6 +26,7 @@ $sources = [
     'root' => $root,
     'build' => $root . '_build/',
     'elements' => $root . '_build/elements/',
+    'resolvers' => $root . '_build/resolvers/',
     'source_core' => $root . 'core/components/' . PKG_NAME_LOWER . '/',
     'source_assets' => $root . 'assets/components/' . PKG_NAME_LOWER . '/',
 ];
@@ -190,6 +191,23 @@ foreach ($plugins as $name => $data) {
 }
 
 // Note: OnManagerPageInit is a standard MODX event, no need to create it
+
+// === Add resolvers ===
+out('Adding resolvers...');
+
+$resolversPath = $sources['resolvers'];
+if (is_dir($resolversPath)) {
+    $resolverFiles = glob($resolversPath . 'resolver_*.php');
+    sort($resolverFiles);
+
+    foreach ($resolverFiles as $resolverFile) {
+        $resolverName = basename($resolverFile);
+        $vehicle->resolve('php', [
+            'source' => $resolverFile,
+        ]);
+        out("  Added resolver: {$resolverName}");
+    }
+}
 
 // === Set package attributes ===
 out('Setting package attributes...');

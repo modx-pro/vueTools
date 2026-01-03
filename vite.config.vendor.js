@@ -59,6 +59,12 @@ const piniaConfig = {
     '__VUE_PROD_DEVTOOLS__': false,
     '__VUE_PROD_HYDRATION_MISMATCH_DETAILS__': false
   },
+  resolve: {
+    alias: {
+      'vue': 'vue/dist/vue.esm-browser.prod.js',
+      'pinia': resolve(__dirname, 'node_modules/pinia/dist/pinia.esm-browser.js')
+    }
+  },
   build: {
     outDir: 'assets/components/modxprovuecore/vendor',
     emptyOutDir: false,
@@ -68,10 +74,11 @@ const piniaConfig = {
       fileName: () => 'pinia.min.js'
     },
     rollupOptions: {
-      external: ['vue'],
+      external: ['vue', 'vue/dist/vue.esm-browser.prod.js'],
       output: {
         paths: {
-          'vue': './vue.min.js'
+          'vue': './vue.min.js',
+          'vue/dist/vue.esm-browser.prod.js': './vue.min.js'
         }
       }
     },
@@ -89,6 +96,11 @@ const primevueConfig = {
     '__VUE_PROD_DEVTOOLS__': false,
     '__VUE_PROD_HYDRATION_MISMATCH_DETAILS__': false
   },
+  resolve: {
+    alias: {
+      'vue': 'vue/dist/vue.esm-browser.prod.js'
+    }
+  },
   build: {
     outDir: 'assets/components/modxprovuecore/vendor',
     emptyOutDir: false,
@@ -98,10 +110,11 @@ const primevueConfig = {
       fileName: () => 'primevue.min.js'
     },
     rollupOptions: {
-      external: ['vue'],
+      external: ['vue', 'vue/dist/vue.esm-browser.prod.js'],
       output: {
         paths: {
-          'vue': './vue.min.js'
+          'vue': './vue.min.js',
+          'vue/dist/vue.esm-browser.prod.js': './vue.min.js'
         }
       }
     },

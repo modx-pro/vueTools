@@ -478,12 +478,189 @@ window.MyComponentWidget = { init, destroy }
 
 ---
 
+## Проверка наличия ModxProVueCore
+
+При отсутствии ModxProVueCore на сайте Vue модули не загрузятся, а в консоли появятся ошибки. Для улучшения UX рекомендуется реализовать проверку наличия зависимости и показывать понятное сообщение пользователю.
+
+### Принцип работы
+
+ModxProVueCore регистрирует `<script type="importmap">` с ключом `vue`. Проверка ищет этот Import Map и, если он отсутствует:
+
+1. Удаляет все Vue module скрипты (предотвращает ошибки в консоли)
+2. Показывает MODX алерт с сообщением об установке зависимости
+3. Устанавливает глобальный флаг `window.MY_COMPONENT_VUE_CORE_MISSING = true`
+
+### Реализация в PHP контроллере
+
+Создайте метод `addVueModule()` в базовом контроллере вашего компонента:
+
+```php
+<?php
+class MyComponentManagerController extends modExtraManagerController
+{
+    /**
+     * Флаг регистрации скрипта проверки (один раз на страницу)
+     */
+    protected static $vueCoreCheckRegistered = false;
+
+    /**
+     * Регистрация Vue ES module с проверкой зависимости ModxProVueCore
+     *
+     * @param string $src URL скрипта модуля
+     * @return void
+     */
+    public function addVueModule($src)
+    {
+        // Регистрируем скрипт проверки только один раз на страницу
+        if (!self::$vueCoreCheckRegistered) {
+            $this->registerVueCoreCheck();
+            self::$vueCoreCheckRegistered = true;
+        }
+
+        // Добавляем версию для сброса кэша (опционально)
+        $src = $src . '?v=' . $this->myComponent->version;
+
+        // Регистрируем модуль с атрибутом data-vue-module
+        // Этот атрибут используется для удаления скриптов при отсутствии VueCore
+        $this->modx->regClientStartupHTMLBlock(
+            '<script type="module" data-vue-module src="' . $src . '"></script>'
+        );
+    }
+
+    /**
+     * Регистрация inline скрипта проверки Import Map
+     * Если ModxProVueCore не установлен — показывает MODX алерт
+     */
+    protected function registerVueCoreCheck()
+    {
+        // Используйте лексиконы вашего компонента
+        $alertTitle = $this->modx->lexicon('mycomponent_error') ?: 'Error';
+        $alertMessage = $this->modx->lexicon('mycomponent_modxprovuecore_required')
+            ?: 'ModxProVueCore package is required. Please install it from Package Manager.';
+
+        $script = <<<JS
+<script>
+(function() {
+    // Ищем Import Map с ключом vue
+    var importMap = document.querySelector('script[type="importmap"]');
+    var hasVueCore = false;
+
+    if (importMap) {
+        try {
+            var mapContent = JSON.parse(importMap.textContent);
+            hasVueCore = mapContent.imports && mapContent.imports.vue;
+        } catch (e) {
+            hasVueCore = false;
+        }
+    }
+
+    // Если VueCore не найден — удаляем Vue модули и показываем алерт
+    if (!hasVueCore) {
+        // Удаляем все скрипты с атрибутом data-vue-module
+        document.querySelectorAll('script[type="module"][data-vue-module]').forEach(function(el) {
+            el.remove();
+        });
+
+        // Показываем MODX алерт (ждём загрузки ExtJS)
+        if (typeof Ext !== 'undefined') {
+            Ext.onReady(function() {
+                if (typeof MODx !== 'undefined' && MODx.msg) {
+                    MODx.msg.alert('{$alertTitle}', '{$alertMessage}');
+                } else {
+                    alert('{$alertMessage}');
+                }
+            });
+        } else {
+            document.addEventListener('DOMContentLoaded', function() {
+                setTimeout(function() {
+                    if (typeof MODx !== 'undefined' && MODx.msg) {
+                        MODx.msg.alert('{$alertTitle}', '{$alertMessage}');
+                    } else {
+                        alert('{$alertMessage}');
+                    }
+                }, 500);
+            });
+        }
+
+        // Глобальный флаг для использования в других скриптах
+        window.MY_COMPONENT_VUE_CORE_MISSING = true;
+    }
+})();
+</script>
+JS;
+
+        $this->modx->regClientStartupHTMLBlock($script);
+    }
+}
+```
+
+### Использование
+
+Вместо прямого вызова `regClientStartupHTMLBlock()` используйте новый метод:
+
+```php
+public function loadCustomCssJs()
+{
+    $assetsUrl = $this->myComponent->config['assetsUrl'];
+
+    // CSS (как обычно)
+    $this->addCss($assetsUrl . 'css/mgr/vue-dist/my-widget.min.css');
+
+    // ✅ ПРАВИЛЬНО — с проверкой зависимости
+    $this->addVueModule($assetsUrl . 'js/mgr/vue-dist/my-widget.min.js');
+    $this->addVueModule($assetsUrl . 'js/mgr/vue-dist/another-widget.min.js');
+
+    // ❌ НЕПРАВИЛЬНО — без проверки, ошибки в консоли если VueCore не установлен
+    // $this->modx->regClientStartupHTMLBlock(
+    //     '<script type="module" src="' . $assetsUrl . 'js/mgr/vue-dist/my-widget.min.js"></script>'
+    // );
+}
+```
+
+### Лексиконы
+
+Добавьте лексиконы для сообщения об ошибке:
+
+```php
+// lexicon/ru/default.inc.php
+$_lang['mycomponent_error'] = 'Ошибка';
+$_lang['mycomponent_modxprovuecore_required'] = 'Для работы MyComponent требуется пакет ModxProVueCore. Установите его через Менеджер пакетов.';
+
+// lexicon/en/default.inc.php
+$_lang['mycomponent_error'] = 'Error';
+$_lang['mycomponent_modxprovuecore_required'] = 'ModxProVueCore package is required for MyComponent. Please install it via Package Manager.';
+```
+
+### Результат
+
+| Без проверки | С проверкой |
+|--------------|-------------|
+| Ошибки `Failed to resolve module specifier "vue"` в консоли | Чистая консоль |
+| Vue виджеты не работают, пустые контейнеры | Понятный MODX алерт с инструкцией |
+| Пользователь не понимает проблему | Пользователь знает что делать |
+
+### Проверка в JavaScript
+
+При необходимости можно проверить флаг в клиентском коде:
+
+```javascript
+// В ExtJS панели или другом скрипте
+if (window.MY_COMPONENT_VUE_CORE_MISSING) {
+    // Скрыть вкладки с Vue виджетами или показать заглушку
+    Ext.getCmp('my-vue-tab').hide();
+}
+```
+
+---
+
 ## Чеклист интеграции
 
 - [ ] Добавить `modxprovuecore` в зависимости пакета (setup options)
 - [ ] Настроить `external` в vite.config.js
 - [ ] Настроить postcss prefix selector для изоляции стилей
-- [ ] Использовать `regClientStartupHTMLBlock()` для ES modules (отдельные вызовы!)
+- [ ] **Реализовать `addVueModule()` с проверкой зависимости** (см. раздел выше)
+- [ ] Добавить лексиконы для сообщения об ошибке (`_error`, `_modxprovuecore_required`)
+- [ ] Использовать `addVueModule()` вместо `regClientStartupHTMLBlock()` для ES modules
 - [ ] Добавить `class="vueApp"` к контейнерам Vue
 - [ ] Загрузить топики лексиконов в контроллере
 - [ ] Создать локальный `request.js` если используете собственный роутер
