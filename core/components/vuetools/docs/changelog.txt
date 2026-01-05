@@ -1,8 +1,9 @@
-Changelog for ModxProVueCore
+Changelog for VueTools
 
-1.0.0-alpha1 (January 2026)
+1.0.0-beta1 (January 2026)
 ============================
-- Initial alpha release
+- First beta release
+- Renamed from ModxProVueCore to VueTools
 - Vue 3.5.13 bundled as ES module
 - Pinia 3.0.1 bundled as ES module
 - PrimeVue 4.3.1 with Aura theme bundled as ES module

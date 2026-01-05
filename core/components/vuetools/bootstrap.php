@@ -1,14 +1,14 @@
 <?php
 /**
- * ModxProVueCore bootstrap
+ * VueTools bootstrap
  *
  * @var \MODX\Revolution\modX $modx
  * @var array $namespace
  */
 
-// Register autoloader for ModxProVueCore namespace
+// Register autoloader for VueTools namespace
 spl_autoload_register(function ($class) {
-    $prefix = 'ModxProVueCore\\';
+    $prefix = 'VueTools\\';
     $baseDir = __DIR__ . '/src/';
 
     $len = strlen($prefix);
@@ -24,6 +24,6 @@ spl_autoload_register(function ($class) {
     }
 });
 
-$modx->services->add('modxprovuecore', function ($c) use ($modx, $namespace) {
-    return new \ModxProVueCore\VueCore($modx, $namespace);
+$modx->services->add('vuetools', function ($c) use ($modx, $namespace) {
+    return new \VueTools\VueCore($modx, $namespace);
 });

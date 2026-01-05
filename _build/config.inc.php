@@ -1,15 +1,15 @@
 <?php
 /**
- * modxpro-vue-core build config
+ * VueTools build config
  *
- * @package ModxProVueCore
+ * @package VueTools
  */
 
 $config = [
-    'name' => 'ModxProVueCore',
-    'name_lower' => 'modxprovuecore',
+    'name' => 'VueTools',
+    'name_lower' => 'vuetools',
     'version' => '1.0.0',
-    'release' => 'alpha1',
+    'release' => 'beta1',
     'author' => 'modx.pro',
     'email' => 'support@modx.pro',
 

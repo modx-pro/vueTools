@@ -1,19 +1,19 @@
 <?php
 
-namespace ModxProVueCore;
+namespace VueTools;
 
 use MODX\Revolution\modX;
 
 /**
- * VueCore - Main service class for ModxProVueCore
+ * VueCore - Main service class for VueTools
  *
  * Provides Vue stack (Vue, Pinia, PrimeVue) via ES Modules Import Map.
  *
- * @package ModxProVueCore
+ * @package VueTools
  */
 class VueCore
 {
-    public const VERSION = '1.0.0-alpha.1';
+    public const VERSION = '1.0.0-beta1';
 
     protected modX $modx;
     protected array $namespace;
@@ -36,9 +36,9 @@ class VueCore
         $this->modx = $modx;
         $this->namespace = $namespace;
         $this->assetsUrl = $modx->getOption(
-            'modxprovuecore.assets_url',
+            'vuetools.assets_url',
             null,
-            MODX_ASSETS_URL . 'components/modxprovuecore/'
+            MODX_ASSETS_URL . 'components/vuetools/'
         );
     }
 
@@ -63,11 +63,11 @@ class VueCore
                 'vue' => $vendorUrl . 'vue.min.js',
                 'pinia' => $vendorUrl . 'pinia.min.js',
                 'primevue' => $vendorUrl . 'primevue.min.js',
-                '@modxprovuecore/useApi' => $composablesUrl . 'useApi.min.js',
-                '@modxprovuecore/useLexicon' => $composablesUrl . 'useLexicon.min.js',
-                '@modxprovuecore/useModx' => $composablesUrl . 'useModx.min.js',
-                '@modxprovuecore/usePermission' => $composablesUrl . 'usePermission.min.js',
-                '@modxprovuecore/' => $composablesUrl,
+                '@vuetools/useApi' => $composablesUrl . 'useApi.min.js',
+                '@vuetools/useLexicon' => $composablesUrl . 'useLexicon.min.js',
+                '@vuetools/useModx' => $composablesUrl . 'useModx.min.js',
+                '@vuetools/usePermission' => $composablesUrl . 'usePermission.min.js',
+                '@vuetools/' => $composablesUrl,
             ]
         ];
 
@@ -86,7 +86,7 @@ class VueCore
 
         $this->importMapRegistered = true;
 
-        $this->modx->log(modX::LOG_LEVEL_DEBUG, '[ModxProVueCore] Import Map registered');
+        $this->modx->log(modX::LOG_LEVEL_DEBUG, '[VueTools] Import Map registered');
 
         return true;
     }

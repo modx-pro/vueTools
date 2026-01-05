@@ -4,9 +4,9 @@ node_modules/
 
 # Build output
 dist/
-assets/components/modxprovuecore/vendor/
-assets/components/modxprovuecore/composables/
-assets/components/modxprovuecore/css/
+assets/components/vuetools/vendor/
+assets/components/vuetools/composables/
+assets/components/vuetools/css/
 
 # Vite
 *.local

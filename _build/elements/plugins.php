@@ -1,8 +1,8 @@
 <?php
 /**
- * modxpro-vue-core plugins
+ * VueTools plugins
  *
- * @package ModxProVueCore
+ * @package VueTools
  */
 
 return [

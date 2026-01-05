@@ -1,6 +1,6 @@
 {
-  "name": "modxprovuecore",
-  "version": "1.0.0-alpha.1",
+  "name": "vuetools",
+  "version": "1.0.0-beta1",
   "description": "Vue core stack for MODX Revolution 3.x components",
   "type": "module",
   "scripts": {
@@ -12,7 +12,7 @@
     "build:vendor": "npm run clean:vendor && npm run build:vue && npm run build:pinia && npm run build:primevue",
     "build:composables": "vite build --config vite.config.composables.js",
     "build:all": "npm run build:vendor && npm run build:composables",
-    "clean:vendor": "rimraf assets/components/modxprovuecore/vendor",
+    "clean:vendor": "rimraf assets/components/vuetools/vendor",
     "preview": "vite preview"
   },
   "dependencies": {

@@ -1,10 +1,10 @@
 <?php
 /**
- * modxpro-vue-core Build Script
+ * VueTools Build Script
  *
  * Builds a transport package for MODX Revolution 3.x
  *
- * @package ModxProVueCore
+ * @package VueTools
  */
 
 set_time_limit(0);

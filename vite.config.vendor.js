@@ -38,7 +38,7 @@ const vueConfig = {
     '__VUE_PROD_HYDRATION_MISMATCH_DETAILS__': false
   },
   build: {
-    outDir: 'assets/components/modxprovuecore/vendor',
+    outDir: 'assets/components/vuetools/vendor',
     emptyOutDir: false,
     lib: {
       entry: resolve(__dirname, 'src/vendor/vue.js'),
@@ -66,7 +66,7 @@ const piniaConfig = {
     }
   },
   build: {
-    outDir: 'assets/components/modxprovuecore/vendor',
+    outDir: 'assets/components/vuetools/vendor',
     emptyOutDir: false,
     lib: {
       entry: resolve(__dirname, 'src/vendor/pinia.js'),
@@ -102,7 +102,7 @@ const primevueConfig = {
     }
   },
   build: {
-    outDir: 'assets/components/modxprovuecore/vendor',
+    outDir: 'assets/components/vuetools/vendor',
     emptyOutDir: false,
     lib: {
       entry: resolve(__dirname, 'src/vendor/primevue.js'),

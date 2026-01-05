@@ -3,7 +3,7 @@ import { resolve } from 'path'
 
 export default defineConfig({
   build: {
-    outDir: 'assets/components/modxprovuecore/composables',
+    outDir: 'assets/components/vuetools/composables',
     emptyOutDir: true,
     lib: {
       entry: {

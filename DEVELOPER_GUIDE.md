@@ -1,8 +1,8 @@
-# ModxProVueCore - Руководство разработчика
+# VueTools - Руководство разработчика
 
 ## Обзор
 
-**ModxProVueCore** — это базовый пакет, предоставляющий Vue 3 стек для MODX 3.x компонентов через ES Modules Import Map. Позволяет нескольким компонентам использовать общие библиотеки без дублирования кода.
+**VueTools** — это базовый пакет, предоставляющий Vue 3 стек для MODX 3.x компонентов через ES Modules Import Map. Позволяет нескольким компонентам использовать общие библиотеки без дублирования кода.
 
 ### Состав пакета
 
@@ -28,18 +28,18 @@
 
 ### Import Map
 
-ModxProVueCore регистрирует Import Map в `<head>` страницы менеджера MODX:
+VueTools регистрирует Import Map в `<head>` страницы менеджера MODX:
 
 ```json
 {
   "imports": {
-    "vue": "/assets/components/modxprovuecore/vendor/vue.min.js",
-    "pinia": "/assets/components/modxprovuecore/vendor/pinia.min.js",
-    "primevue": "/assets/components/modxprovuecore/vendor/primevue.min.js",
-    "@modxprovuecore/useApi": "/assets/components/modxprovuecore/composables/useApi.min.js",
-    "@modxprovuecore/useLexicon": "/assets/components/modxprovuecore/composables/useLexicon.min.js",
-    "@modxprovuecore/useModx": "/assets/components/modxprovuecore/composables/useModx.min.js",
-    "@modxprovuecore/usePermission": "/assets/components/modxprovuecore/composables/usePermission.min.js"
+    "vue": "/assets/components/vuetools/vendor/vue.min.js",
+    "pinia": "/assets/components/vuetools/vendor/pinia.min.js",
+    "primevue": "/assets/components/vuetools/vendor/primevue.min.js",
+    "@vuetools/useApi": "/assets/components/vuetools/composables/useApi.min.js",
+    "@vuetools/useLexicon": "/assets/components/vuetools/composables/useLexicon.min.js",
+    "@vuetools/useModx": "/assets/components/vuetools/composables/useModx.min.js",
+    "@vuetools/usePermission": "/assets/components/vuetools/composables/usePermission.min.js"
   }
 }
 ```
@@ -73,10 +73,10 @@ export default defineConfig({
         'vue',
         'pinia',
         'primevue',
-        '@modxprovuecore/useApi',
-        '@modxprovuecore/useLexicon',
-        '@modxprovuecore/useModx',
-        '@modxprovuecore/usePermission'
+        '@vuetools/useApi',
+        '@vuetools/useLexicon',
+        '@vuetools/useModx',
+        '@vuetools/usePermission'
       ],
       output: {
         format: 'es',
@@ -155,10 +155,10 @@ import Button from 'primevue/button'
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
 
-// Composables из ModxProVueCore
-import { useLexicon } from '@modxprovuecore/useLexicon'
-import { useModx } from '@modxprovuecore/useModx'
-import { usePermission } from '@modxprovuecore/usePermission'
+// Composables из VueTools
+import { useLexicon } from '@vuetools/useLexicon'
+import { useModx } from '@vuetools/useModx'
+import { usePermission } from '@vuetools/usePermission'
 
 const { _ } = useLexicon()
 const { modx, config } = useModx()
@@ -195,7 +195,7 @@ const canEdit = computed(() => hasPermission('my_component_edit'))
 Работа с лексиконами MODX.
 
 ```javascript
-import { useLexicon } from '@modxprovuecore/useLexicon'
+import { useLexicon } from '@vuetools/useLexicon'
 
 const { _, has, getByPrefix } = useLexicon()
 
@@ -226,7 +226,7 @@ public function getLanguageTopics()
 Доступ к глобальному объекту MODX.
 
 ```javascript
-import { useModx } from '@modxprovuecore/useModx'
+import { useModx } from '@vuetools/useModx'
 
 const { modx, config, siteId } = useModx()
 
@@ -246,7 +246,7 @@ modx.msg.alert('Title', 'Message')
 Проверка прав пользователя.
 
 ```javascript
-import { usePermission } from '@modxprovuecore/usePermission'
+import { usePermission } from '@vuetools/usePermission'
 
 const { hasPermission, hasAnyPermission, hasAllPermissions } = usePermission()
 
@@ -265,7 +265,7 @@ if (hasAllPermissions(['view', 'edit'])) { ... }
 HTTP клиент для **стандартного** MODX connector API.
 
 ```javascript
-import { useApi } from '@modxprovuecore/useApi'
+import { useApi } from '@vuetools/useApi'
 
 const { get, post, put, delete: del } = useApi()
 
@@ -358,7 +358,7 @@ export default new Request()
 Использование:
 
 ```javascript
-// Вместо useApi из modxprovuecore
+// Вместо useApi из vuetools
 import request from '../request.js'
 
 const products = await request.get('/api/products', { limit: 20 })
@@ -478,13 +478,13 @@ window.MyComponentWidget = { init, destroy }
 
 ---
 
-## Проверка наличия ModxProVueCore
+## Проверка наличия VueTools
 
-При отсутствии ModxProVueCore на сайте Vue модули не загрузятся, а в консоли появятся ошибки. Для улучшения UX рекомендуется реализовать проверку наличия зависимости и показывать понятное сообщение пользователю.
+При отсутствии VueTools на сайте Vue модули не загрузятся, а в консоли появятся ошибки. Для улучшения UX рекомендуется реализовать проверку наличия зависимости и показывать понятное сообщение пользователю.
 
 ### Принцип работы
 
-ModxProVueCore регистрирует `<script type="importmap">` с ключом `vue`. Проверка ищет этот Import Map и, если он отсутствует:
+VueTools регистрирует `<script type="importmap">` с ключом `vue`. Проверка ищет этот Import Map и, если он отсутствует:
 
 1. Удаляет все Vue module скрипты (предотвращает ошибки в консоли)
 2. Показывает MODX алерт с сообщением об установке зависимости
@@ -504,7 +504,7 @@ class MyComponentManagerController extends modExtraManagerController
     protected static $vueCoreCheckRegistered = false;
 
     /**
-     * Регистрация Vue ES module с проверкой зависимости ModxProVueCore
+     * Регистрация Vue ES module с проверкой зависимости VueTools
      *
      * @param string $src URL скрипта модуля
      * @return void
@@ -529,14 +529,14 @@ class MyComponentManagerController extends modExtraManagerController
 
     /**
      * Регистрация inline скрипта проверки Import Map
-     * Если ModxProVueCore не установлен — показывает MODX алерт
+     * Если VueTools не установлен — показывает MODX алерт
      */
     protected function registerVueCoreCheck()
     {
         // Используйте лексиконы вашего компонента
         $alertTitle = $this->modx->lexicon('mycomponent_error') ?: 'Error';
-        $alertMessage = $this->modx->lexicon('mycomponent_modxprovuecore_required')
-            ?: 'ModxProVueCore package is required. Please install it from Package Manager.';
+        $alertMessage = $this->modx->lexicon('mycomponent_vuetools_required')
+            ?: 'VueTools package is required. Please install it from Package Manager.';
 
         $script = <<<JS
 <script>
@@ -624,11 +624,11 @@ public function loadCustomCssJs()
 ```php
 // lexicon/ru/default.inc.php
 $_lang['mycomponent_error'] = 'Ошибка';
-$_lang['mycomponent_modxprovuecore_required'] = 'Для работы MyComponent требуется пакет ModxProVueCore. Установите его через Менеджер пакетов.';
+$_lang['mycomponent_vuetools_required'] = 'Для работы MyComponent требуется пакет VueTools. Установите его через Менеджер пакетов.';
 
 // lexicon/en/default.inc.php
 $_lang['mycomponent_error'] = 'Error';
-$_lang['mycomponent_modxprovuecore_required'] = 'ModxProVueCore package is required for MyComponent. Please install it via Package Manager.';
+$_lang['mycomponent_vuetools_required'] = 'VueTools package is required for MyComponent. Please install it via Package Manager.';
 ```
 
 ### Результат
@@ -655,11 +655,11 @@ if (window.MY_COMPONENT_VUE_CORE_MISSING) {
 
 ## Чеклист интеграции
 
-- [ ] Добавить `modxprovuecore` в зависимости пакета (setup options)
+- [ ] Добавить `vuetools` в зависимости пакета (setup options)
 - [ ] Настроить `external` в vite.config.js
 - [ ] Настроить postcss prefix selector для изоляции стилей
 - [ ] **Реализовать `addVueModule()` с проверкой зависимости** (см. раздел выше)
-- [ ] Добавить лексиконы для сообщения об ошибке (`_error`, `_modxprovuecore_required`)
+- [ ] Добавить лексиконы для сообщения об ошибке (`_error`, `_vuetools_required`)
 - [ ] Использовать `addVueModule()` вместо `regClientStartupHTMLBlock()` для ES modules
 - [ ] Добавить `class="vueApp"` к контейнерам Vue
 - [ ] Загрузить топики лексиконов в контроллере
@@ -676,4 +676,4 @@ if (window.MY_COMPONENT_VUE_CORE_MISSING) {
 
 ## Поддержка
 
-- GitHub Issues: https://github.com/modx-pro/modxprovuecore/issues
+- GitHub Issues: https://github.com/modx-pro/vuetools/issues

@@ -1,5 +1,5 @@
-ModxProVueCore
-==============
+VueTools
+========
 
 Vue core stack for MODX Revolution 3.x components.
 
@@ -29,7 +29,7 @@ In your Vue component:
     import { createApp, ref } from 'vue';
     import { createPinia } from 'pinia';
     import PrimeVue from 'primevue';
-    import { useApi } from '@modxprovuecore/useApi';
+    import { useApi } from '@vuetools/useApi';
 
 CSS Isolation
 -------------
@@ -38,12 +38,12 @@ with ExtJS. Make sure your Vue mount points have class="vueApp".
 
 Composables
 -----------
-- @modxprovuecore/useApi - HTTP client for MODX API
-- @modxprovuecore/useLexicon - Lexicon accessor
-- @modxprovuecore/useModx - MODX config and user access
-- @modxprovuecore/usePermission - Permission checking
+- @vuetools/useApi - HTTP client for MODX API
+- @vuetools/useLexicon - Lexicon accessor
+- @vuetools/useModx - MODX config and user access
+- @vuetools/usePermission - Permission checking
 
 Support
 -------
-GitHub: https://github.com/modx-pro/modxprovuecore
-Documentation: https://docs.modx.pro/components/modxprovuecore
+GitHub: https://github.com/modx-pro/vuetools
+Documentation: https://docs.modx.pro/components/vuetools

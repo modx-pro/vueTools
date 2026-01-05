@@ -9,19 +9,19 @@
  * @var \MODX\Revolution\modX $modx
  * @var array $scriptProperties
  *
- * @package ModxProVueCore
+ * @package VueTools
  */
 
 switch ($modx->event->name) {
     case 'OnManagerPageBeforeRender':
         // Get VueCore service
-        if (!$modx->services->has('modxprovuecore')) {
+        if (!$modx->services->has('vuetools')) {
             $modx->log(modX::LOG_LEVEL_ERROR, '[VueCoreManager] Service not registered');
             break;
         }
 
-        /** @var \ModxProVueCore\VueCore $vueCore */
-        $vueCore = $modx->services->get('modxprovuecore');
+        /** @var \VueTools\VueCore $vueCore */
+        $vueCore = $modx->services->get('vuetools');
 
         // Register Import Map and include CSS
         $vueCore->include();

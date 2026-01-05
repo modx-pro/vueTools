@@ -6,7 +6,7 @@
  * Собирает обезличенные технические данные о среде для улучшения совместимости.
  * Не собирает персональные данные, домены, IP-адреса или конфиденциальную информацию.
  *
- * @package ModxProVueCore
+ * @package VueTools
  */
 
 use MODX\Revolution\modContext;
@@ -42,7 +42,7 @@ $collectMetrics = function () use ($modx, $options): array {
 
     /** @var modTransportPackage $existingPackage */
     $existingPackage = $modx->getObject(modTransportPackage::class, [
-        'package_name' => 'ModxProVueCore',
+        'package_name' => 'VueTools',
         'installed:IS NOT' => null,
     ]);
 
@@ -103,7 +103,7 @@ $collectMetrics = function () use ($modx, $options): array {
     $osType = PHP_OS_FAMILY;
 
     return [
-        'package_name' => 'ModxProVueCore',
+        'package_name' => 'VueTools',
         'package_version' => $options['package_version'] ?? '1.0.0',
         'install_type' => $installType,
         'previous_version' => $previousVersion,
