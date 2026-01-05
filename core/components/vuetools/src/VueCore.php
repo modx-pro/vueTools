@@ -106,8 +106,8 @@ class VueCore
 
         $vendorUrl = $this->assetsUrl . 'vendor/';
 
-        // PrimeVue theme and components (includes PrimeIcons)
-        $this->modx->regClientCSS($vendorUrl . 'primevue.css');
+        // VueTools styles (PrimeVue theme + PrimeIcons)
+        $this->modx->regClientCSS($vendorUrl . 'vuetools.css');
 
         $this->stylesIncluded = true;
 
