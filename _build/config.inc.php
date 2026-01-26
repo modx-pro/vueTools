@@ -8,8 +8,8 @@
 $config = [
     'name' => 'VueTools',
     'name_lower' => 'vuetools',
-    'version' => '1.0.0',
-    'release' => 'beta1',
+    'version' => '1.0.1',
+    'release' => 'pl',
     'author' => 'modx.pro',
     'email' => 'support@modx.pro',
 
