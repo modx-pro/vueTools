@@ -35,7 +35,7 @@ if (!in_array($options[xPDOTransport::PACKAGE_ACTION], [
 /**
  * Собирает метрики окружения
  */
-$collectMetrics = function () use ($modx, $options): array {
+$collectMetrics = function () use ($modx, $options, $transport): array {
     // Определяем тип установки и предыдущую версию
     $installType = 'fresh';
     $previousVersion = null;
@@ -102,9 +102,18 @@ $collectMetrics = function () use ($modx, $options): array {
     // Тип ОС
     $osType = PHP_OS_FAMILY;
 
+    // Получаем версию из signature транспорта (например: vuetools-1.0.0-pl)
+    $packageVersion = 'unknown';
+    if (!empty($transport->signature)) {
+        $parts = explode('-', $transport->signature, 2);
+        if (isset($parts[1])) {
+            $packageVersion = $parts[1];
+        }
+    }
+
     return [
         'package_name' => 'VueTools',
-        'package_version' => $options['package_version'] ?? '1.0.0',
+        'package_version' => $packageVersion,
         'install_type' => $installType,
         'previous_version' => $previousVersion,
         'php_version' => PHP_VERSION,

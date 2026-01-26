@@ -122,6 +122,24 @@ $vehicle = $builder->createVehicle([
     'vehicle_class' => xPDOFileVehicle::class,
     xPDOTransport::ABORT_INSTALL_ON_VEHICLE_FAIL => true,
 ]);
+
+// === Add resolvers to assets vehicle ===
+out('Adding resolvers...');
+
+$resolversPath = $sources['resolvers'];
+if (is_dir($resolversPath)) {
+    $resolverFiles = glob($resolversPath . 'resolver_*.php');
+    sort($resolverFiles);
+
+    foreach ($resolverFiles as $resolverFile) {
+        $resolverName = basename($resolverFile);
+        $vehicle->resolve('php', [
+            'source' => $resolverFile,
+        ]);
+        out("  Added resolver: {$resolverName}");
+    }
+}
+
 $builder->putVehicle($vehicle);
 
 // === Add plugins ===
@@ -191,23 +209,6 @@ foreach ($plugins as $name => $data) {
 }
 
 // Note: OnManagerPageInit is a standard MODX event, no need to create it
-
-// === Add resolvers ===
-out('Adding resolvers...');
-
-$resolversPath = $sources['resolvers'];
-if (is_dir($resolversPath)) {
-    $resolverFiles = glob($resolversPath . 'resolver_*.php');
-    sort($resolverFiles);
-
-    foreach ($resolverFiles as $resolverFile) {
-        $resolverName = basename($resolverFile);
-        $vehicle->resolve('php', [
-            'source' => $resolverFile,
-        ]);
-        out("  Added resolver: {$resolverName}");
-    }
-}
 
 // === Set package attributes ===
 out('Setting package attributes...');

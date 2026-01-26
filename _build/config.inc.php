@@ -8,10 +8,10 @@
 $config = [
     'name' => 'VueTools',
     'name_lower' => 'vuetools',
-    'version' => '1.0.0',
-    'release' => 'beta1',
-    'author' => 'modx.pro',
-    'email' => 'support@modx.pro',
+    'version' => '1.0.1',
+    'release' => 'pl',
+    'author' => 'Nikolay Savin',
+    'telegram' => 'biz87',
 
     'description' => 'Vue core stack for MODX components (Vue, Pinia, PrimeVue)',
 
