@@ -12,7 +12,7 @@ This package provides a shared Vue stack (Vue 3, Pinia, PrimeVue) for MODX Extra
 - **Pinia 3.x** - State management
 - **PrimeVue 4.x** - UI components (Aura theme)
 - **PrimeIcons 7.x** - Icon library
-- **Common composables** - useApi, useLexicon, useModx, usePermission
+- **Common composables** - useApi, useLexicon, useModx, usePermission, usePrimeVueLocale (ru/en for DataTable, DatePicker, Calendar)
 
 ## Requirements
 
@@ -65,7 +65,11 @@ export default defineConfig({
         'vue',
         'pinia',
         'primevue',
-        /^@modxpro-vue-core\/.*/
+        '@vuetools/useApi',
+        '@vuetools/useLexicon',
+        '@vuetools/useModx',
+        '@vuetools/usePermission',
+        '@vuetools/usePrimeVueLocale'
       ]
     }
   }
@@ -79,16 +83,17 @@ import { createApp, ref } from 'vue';
 import { createPinia } from 'pinia';
 import { PrimeVue, Aura, DataTable, Button } from 'primevue';
 import { useApi, useLexicon } from '@modxpro-vue-core/';
+import { getPrimeVueLocale } from '@vuetools/usePrimeVueLocale';
 
 const app = createApp(MyComponent);
 app.use(createPinia());
-app.use(PrimeVue, { theme: { preset: Aura } });
+app.use(PrimeVue, { theme: { preset: Aura }, locale: getPrimeVueLocale() });
 app.mount('#my-app');
 ```
 
 ## Version
 
-1.0.0-alpha.1
+1.1.0-beta1
 
 ## License
 

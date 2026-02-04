@@ -30,6 +30,9 @@ In your Vue component:
     import { createPinia } from 'pinia';
     import PrimeVue from 'primevue';
     import { useApi } from '@vuetools/useApi';
+    import { getPrimeVueLocale } from '@vuetools/usePrimeVueLocale';
+
+Pass locale: getPrimeVueLocale() to PrimeVue config for DataTable/DatePicker/Calendar translations (ru/en, from primelocale).
 
 CSS Isolation
 -------------
@@ -42,6 +45,7 @@ Composables
 - @vuetools/useLexicon - Lexicon accessor
 - @vuetools/useModx - MODX config and user access
 - @vuetools/usePermission - Permission checking
+- @vuetools/usePrimeVueLocale - PrimeVue locale (ru/en from primelocale) for DataTable, DatePicker, Calendar
 
 Support
 -------

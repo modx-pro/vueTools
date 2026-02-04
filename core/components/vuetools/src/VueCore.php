@@ -13,7 +13,7 @@ use MODX\Revolution\modX;
  */
 class VueCore
 {
-    public const VERSION = '1.0.0-beta1';
+    public const VERSION = '1.1.0-beta1';
 
     protected modX $modx;
     protected array $namespace;
@@ -67,6 +67,7 @@ class VueCore
                 '@vuetools/useLexicon' => $composablesUrl . 'useLexicon.min.js',
                 '@vuetools/useModx' => $composablesUrl . 'useModx.min.js',
                 '@vuetools/usePermission' => $composablesUrl . 'usePermission.min.js',
+                '@vuetools/usePrimeVueLocale' => $composablesUrl . 'usePrimeVueLocale.min.js',
                 '@vuetools/' => $composablesUrl,
             ]
         ];
