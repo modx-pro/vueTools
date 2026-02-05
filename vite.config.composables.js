@@ -18,6 +18,7 @@ export default defineConfig({
       fileName: (format, entryName) => `${entryName}.min.js`
     },
     rollupOptions: {
+      // primelocale намеренно не в external — бандлится в usePrimeVueLocale.min.js (только используемые локали), чтобы не регистрировать отдельный entry в Import Map
       external: ['vue', 'pinia'],
       output: {
         globals: {

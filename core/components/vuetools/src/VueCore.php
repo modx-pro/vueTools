@@ -13,7 +13,7 @@ use MODX\Revolution\modX;
  */
 class VueCore
 {
-    public const VERSION = '1.1.0-beta1';
+    public const VERSION = '1.0.0-beta1';
 
     protected modX $modx;
     protected array $namespace;

@@ -8,8 +8,8 @@
 $config = [
     'name' => 'VueTools',
     'name_lower' => 'vuetools',
-    'version' => '1.1.0',
-    'release' => 'pl',
+    'version' => '1.0.0',
+    'release' => 'beta1',
     'author' => 'Nikolay Savin',
     'telegram' => 'biz87',
 

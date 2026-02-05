@@ -76,7 +76,7 @@ app.use(PrimeVue, { theme: { preset: Aura }, locale })
 const locale = getPrimeVueLocale('ru')
 ```
 
-Доступные коды: `ru`, `en`. Для неизвестного кода используется английская локаль. Локали берутся из [primelocale](https://github.com/primefaces/primelocale); при необходимости другие языки можно добавить в `usePrimeVueLocale.js`, импортируя из `primelocale/js/<код>.js`.
+Доступные коды: `de`, `en`, `es`, `fr`, `pl`, `ru`, `uk`. Для неизвестного кода используется английская локаль. Локали берутся из [primelocale](https://github.com/primefaces/primelocale); при необходимости другие языки можно добавить в `usePrimeVueLocale.js`, импортируя из `primelocale/js/<код>.js`.
 
 ---
 

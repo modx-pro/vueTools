@@ -1,6 +1,6 @@
 {
   "name": "vuetools",
-  "version": "1.1.0-beta1",
+  "version": "1.0.0-beta1",
   "description": "Vue core stack for MODX Revolution 3.x components",
   "type": "module",
   "scripts": {
@@ -19,7 +19,7 @@
     "@primevue/themes": "^4.3.1",
     "pinia": "^3.0.1",
     "primeicons": "^7.0.0",
-    "primelocale": "^2.2.4",
+    "primelocale": "~2.2.4",
     "primevue": "^4.3.1",
     "vue": "^3.5.13"
   },

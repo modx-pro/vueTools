@@ -18,12 +18,22 @@
  * const locale = getPrimeVueLocale('ru')
  */
 
+import { de } from 'primelocale/js/de.js'
 import { en } from 'primelocale/js/en.js'
+import { es } from 'primelocale/js/es.js'
+import { fr } from 'primelocale/js/fr.js'
+import { pl } from 'primelocale/js/pl.js'
 import { ru } from 'primelocale/js/ru.js'
+import { uk } from 'primelocale/js/uk.js'
 
 const LOCALE_MAP = {
+  de,
   en,
-  ru
+  es,
+  fr,
+  pl,
+  ru,
+  uk
 }
 
 /**
@@ -33,16 +43,20 @@ const LOCALE_MAP = {
  * @returns {Object} Объект локали PrimeVue (для app.use(PrimeVue, { locale }))
  */
 export function getPrimeVueLocale(cultureKey) {
-  const key = cultureKey ?? window.MODx?.cultureKey ?? window.MODx?.config?.cultureKey ?? 'en'
+  const key =
+    cultureKey ??
+    (typeof window !== 'undefined' ? (window.MODx?.cultureKey ?? window.MODx?.config?.cultureKey) : null) ??
+    'en'
   const normalized = String(key).toLowerCase().split(/[-_]/)[0]
   return LOCALE_MAP[normalized] ?? en
 }
 
 /**
- * Composable: возвращает текущую локаль PrimeVue (реактивно не привязан к смене языка, только при создании)
+ * Composable: возвращает текущую локаль PrimeVue.
+ * Не реактивен: при смене языка без перезагрузки страницы передайте новый cultureKey или пересоздайте приложение.
  *
  * @param {Object} [options]
- * @param {string} [options.cultureKey] - Код культуры. Если не передан — из window.MODx.cultureKey
+ * @param {string} [options.cultureKey] - Код культуры. Если не передан — из window.MODx.cultureKey (только в браузере)
  * @returns {Object} { locale, getPrimeVueLocale }
  */
 export function usePrimeVueLocale(options = {}) {
