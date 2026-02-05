@@ -1,6 +1,6 @@
 {
   "name": "vuetools",
-  "version": "1.0.0-beta1",
+  "version": "1.1.0",
   "description": "Vue core stack for MODX Revolution 3.x components",
   "type": "module",
   "scripts": {

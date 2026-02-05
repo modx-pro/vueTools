@@ -7,8 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.0-pl] - 2026-02-05
+
 ### Added
-- PrimeVue localization: composable `usePrimeVueLocale` and locale presets (ru, en)
+- PrimeVue localization: composable `usePrimeVueLocale` and locale presets (de, en, es, fr, pl, ru, uk)
 - `getPrimeVueLocale(cultureKey?)` returns PrimeVue locale for DataTable filters, DatePicker, Calendar; uses `MODx.cultureKey` when cultureKey omitted
 - Locales from [primelocale](https://github.com/primefaces/primelocale) package (dependency added)
 - Import Map: `@vuetools/usePrimeVueLocale` entry

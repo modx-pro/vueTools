@@ -93,7 +93,7 @@ app.mount('#my-app');
 
 ## Version
 
-1.0.1-pl
+1.1.0-pl
 
 ## License
 
