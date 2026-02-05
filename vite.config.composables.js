@@ -11,12 +11,14 @@ export default defineConfig({
         'useLexicon': resolve(__dirname, 'src/composables/useLexicon.js'),
         'useModx': resolve(__dirname, 'src/composables/useModx.js'),
         'usePermission': resolve(__dirname, 'src/composables/usePermission.js'),
+        'usePrimeVueLocale': resolve(__dirname, 'src/composables/usePrimeVueLocale.js'),
         'index': resolve(__dirname, 'src/composables/index.js'),
       },
       formats: ['es'],
       fileName: (format, entryName) => `${entryName}.min.js`
     },
     rollupOptions: {
+      // primelocale намеренно не в external — бандлится в usePrimeVueLocale.min.js (только используемые локали), чтобы не регистрировать отдельный entry в Import Map
       external: ['vue', 'pinia'],
       output: {
         globals: {

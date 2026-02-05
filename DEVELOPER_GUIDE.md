@@ -21,6 +21,7 @@
 | `useApi` | HTTP клиент для стандартного MODX API |
 | `useModx` | Доступ к глобальному объекту MODx |
 | `usePermission` | Проверка прав пользователя |
+| `usePrimeVueLocale` | Локали PrimeVue для DataTable, DatePicker, Calendar (ru/en) |
 
 ---
 
@@ -39,7 +40,8 @@ VueTools регистрирует Import Map в `<head>` страницы мен
     "@vuetools/useApi": "/assets/components/vuetools/composables/useApi.min.js",
     "@vuetools/useLexicon": "/assets/components/vuetools/composables/useLexicon.min.js",
     "@vuetools/useModx": "/assets/components/vuetools/composables/useModx.min.js",
-    "@vuetools/usePermission": "/assets/components/vuetools/composables/usePermission.min.js"
+    "@vuetools/usePermission": "/assets/components/vuetools/composables/usePermission.min.js",
+    "@vuetools/usePrimeVueLocale": "/assets/components/vuetools/composables/usePrimeVueLocale.min.js"
   }
 }
 ```
@@ -50,6 +52,31 @@ VueTools регистрирует Import Map в `<head>` страницы мен
 2. Регистрирует Import Map в начале `<head>` (до любых ES modules)
 3. Подключает CSS стили PrimeVue (изолированы классом `.vueApp`)
 4. Ваш компонент загружает свои ES modules, которые импортируют из Import Map
+
+---
+
+## Локализация PrimeVue
+
+По умолчанию PrimeVue отображает подписи на английском: фильтры DataTable («Starts with», «Contains», «Clear»), кнопки и заголовки DatePicker/Calendar («Today», названия месяцев и дней недели) и т.д.
+
+VueTools поставляет готовые локали (ru, en) и хелпер для подстановки текущего языка MODX:
+
+```javascript
+import { getPrimeVueLocale } from '@vuetools/usePrimeVueLocale'
+import PrimeVue from 'primevue/config'
+
+// Локаль по текущему языку менеджера (MODx.cultureKey)
+const locale = getPrimeVueLocale()
+app.use(PrimeVue, { theme: { preset: Aura }, locale })
+```
+
+Явно указать язык:
+
+```javascript
+const locale = getPrimeVueLocale('ru')
+```
+
+Доступные коды: `de`, `en`, `es`, `fr`, `pl`, `ru`, `uk`. Для неизвестного кода используется английская локаль. Локали берутся из [primelocale](https://github.com/primefaces/primelocale); при необходимости другие языки можно добавить в `usePrimeVueLocale.js`, импортируя из `primelocale/js/<код>.js`.
 
 ---
 
@@ -76,7 +103,8 @@ export default defineConfig({
         '@vuetools/useApi',
         '@vuetools/useLexicon',
         '@vuetools/useModx',
-        '@vuetools/usePermission'
+        '@vuetools/usePermission',
+        '@vuetools/usePrimeVueLocale'
       ],
       output: {
         format: 'es',
@@ -398,6 +426,7 @@ import PrimeVue from 'primevue/config'
 import Aura from '@primevue/themes/aura'
 import ToastService from 'primevue/toastservice'
 import ConfirmationService from 'primevue/confirmationservice'
+import { getPrimeVueLocale } from '@vuetools/usePrimeVueLocale'
 
 import MyWidget from '../components/MyWidget.vue'
 
@@ -414,7 +443,8 @@ function createVueApp(props = {}) {
       options: {
         darkModeSelector: 'none'
       }
-    }
+    },
+    locale: getPrimeVueLocale() // русский/английский по MODx.cultureKey
   })
 
   app.use(ToastService)
@@ -656,12 +686,13 @@ if (window.MY_COMPONENT_VUE_CORE_MISSING) {
 ## Чеклист интеграции
 
 - [ ] Добавить `vuetools` в зависимости пакета (setup options)
-- [ ] Настроить `external` в vite.config.js
+- [ ] Настроить `external` в vite.config.js (vue, pinia, primevue, все @vuetools/* composables)
 - [ ] Настроить postcss prefix selector для изоляции стилей
 - [ ] **Реализовать `addVueModule()` с проверкой зависимости** (см. раздел выше)
 - [ ] Добавить лексиконы для сообщения об ошибке (`_error`, `_vuetools_required`)
 - [ ] Использовать `addVueModule()` вместо `regClientStartupHTMLBlock()` для ES modules
 - [ ] Добавить `class="vueApp"` к контейнерам Vue
+- [ ] При использовании DataTable/DatePicker/Calendar: передать `locale: getPrimeVueLocale()` в `app.use(PrimeVue, { ... })`
 - [ ] Загрузить топики лексиконов в контроллере
 - [ ] Создать локальный `request.js` если используете собственный роутер
 

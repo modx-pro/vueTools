@@ -1,18 +1,32 @@
-Changelog for VueTools
+# Changelog
 
-1.0.0-beta1 (January 2026)
-============================
-- First beta release
-- Renamed from ModxProVueCore to VueTools
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [Unreleased]
+
+### Added
+- PrimeVue localization: composable `usePrimeVueLocale` and locale presets (ru, en)
+- `getPrimeVueLocale(cultureKey?)` returns PrimeVue locale for DataTable filters, DatePicker, Calendar; uses `MODx.cultureKey` when cultureKey omitted
+- Locales from [primelocale](https://github.com/primefaces/primelocale) package (dependency added)
+- Import Map: `@vuetools/usePrimeVueLocale` entry
+- DEVELOPER_GUIDE section "Локализация PrimeVue" and README usage example
+
+## [1.0.1-pl] - 2026-01-01
+
+First beta release.
+
+### Added
 - Vue 3.5.13 bundled as ES module
 - Pinia 3.0.1 bundled as ES module
 - PrimeVue 4.3.1 with Aura theme bundled as ES module
 - PrimeIcons 7.0.0 included
 - Import Map registration for browser module resolution
-- CSS isolation with .vueApp prefix (no conflicts with ExtJS)
-- Composables included:
-  - useApi: HTTP client for MODX API
-  - useLexicon: Lexicon accessor with parameter replacement
-  - useModx: Access to MODX config, user, permissions
-  - usePermission: Permission checking helper
+- CSS isolation with `.vueApp` prefix (no conflicts with ExtJS)
+- Composables: useApi, useLexicon, useModx, usePermission
 - VueCoreManager plugin for automatic Import Map registration
+
+### Changed
+- Renamed from ModxProVueCore to VueTools

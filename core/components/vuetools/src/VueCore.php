@@ -67,6 +67,7 @@ class VueCore
                 '@vuetools/useLexicon' => $composablesUrl . 'useLexicon.min.js',
                 '@vuetools/useModx' => $composablesUrl . 'useModx.min.js',
                 '@vuetools/usePermission' => $composablesUrl . 'usePermission.min.js',
+                '@vuetools/usePrimeVueLocale' => $composablesUrl . 'usePrimeVueLocale.min.js',
                 '@vuetools/' => $composablesUrl,
             ]
         ];
