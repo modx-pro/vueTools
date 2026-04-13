@@ -19,7 +19,7 @@
     "@primeuix/themes": "^2.0.3",
     "pinia": "^3.0.4",
     "primeicons": "^7.0.0",
-    "primelocale": "~2.2.4",
+    "primelocale": "^2.3.1",
     "primevue": "^4.5.5",
     "vue": "^3.5.32"
   },
