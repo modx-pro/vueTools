@@ -7,7 +7,7 @@
 
 // Config & Theme
 export { default as PrimeVue } from 'primevue/config'
-export { default as Aura } from '@primevue/themes/aura'
+export { default as Aura } from '@primeuix/themes/aura'
 
 // Services
 export { default as ConfirmationService } from 'primevue/confirmationservice'
