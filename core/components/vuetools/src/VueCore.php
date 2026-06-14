@@ -25,9 +25,9 @@ class VueCore
      * Library versions
      */
     protected array $versions = [
-        'vue' => '3.5.13',
-        'pinia' => '3.0.1',
-        'primevue' => '4.3.1',
+        'vue' => '3.5.32',
+        'pinia' => '3.0.4',
+        'primevue' => '4.5.5',
         'primeicons' => '7.0.0',
     ];
 
