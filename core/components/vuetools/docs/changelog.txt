@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.2-pl] - 2026-06-15
+
+### Added
+- `VueTools\Service` class so MODX resolves the `vuetools` service via the conventional `model/vuetools/` path (#6)
+
+### Changed
+- Migrated PrimeVue theme package `@primevue/themes` to the maintained `@primeuix/themes` (#9)
+- Updated bundled stack: Vue 3.5.32, Pinia 3.0.4, PrimeVue 4.5.5; `primelocale` ^2.3.1 (#9)
+- Synced hardcoded `$versions` in `VueCore` with the shipped bundles (#13)
+- Bumped `postcss` to 8.5.15 — includes security fixes (#12)
+
 ## [1.1.1-pl] - 2026-02-10
 
 ### Fixed
