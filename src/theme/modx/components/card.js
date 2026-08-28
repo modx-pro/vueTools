@@ -3,6 +3,9 @@
  *
  * Restrained elevation: the manager only lifts overlays, so a card gets the
  * subtle radius and a hairline shadow rather than a floating surface.
+ *
+ * Body padding matches the resource form panel (`#modx-resource-main-left`:
+ * 15px). Page shells should not add a second outer pad on the tpl / root.
  */
 
 export const root = {
@@ -11,12 +14,12 @@ export const root = {
 }
 
 export const body = {
-  padding: '0.75rem',
-  gap: '0.5rem'
+  padding: '{modx.space.panel}',
+  gap: '{modx.space.panel}'
 }
 
 export const caption = {
-  gap: '0.25rem'
+  gap: '0.5rem'
 }
 
 export const title = {

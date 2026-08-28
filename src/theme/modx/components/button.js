@@ -9,6 +9,7 @@
  *   severity="success"    $green fill, white label - the Save action
  *   default (primary)     $colorSplash fill
  *
+ * Normal size matches toolbar `.x-btn` height (36px / `modx.control.height`).
  * Labels use the regular weight; the manager never bolds button text.
  * Severity fills other than secondary inherit the base preset and resolve to
  * MODX colors through the primitive ramps.
@@ -20,7 +21,7 @@ export const root = {
   gap: '0.375rem',
   paddingX: '0.875rem',
   paddingY: '{form.field.padding.y}',
-  iconOnlyWidth: '2rem',
+  iconOnlyWidth: '{modx.control.height}',
   sm: {
     fontSize: '{form.field.sm.font.size}',
     paddingX: '0.625rem',
@@ -40,6 +41,25 @@ export const root = {
   badgeSize: '0.875rem',
   transitionDuration: '{form.field.transition.duration}'
 }
+
+/**
+ * PrimeVue has no height token on Button. Pin Normal to the MODX toolbar size;
+ * sm / lg keep their padding-driven sizes.
+ */
+export const css = ({ dt }) => `
+.p-button:not(.p-button-sm):not(.p-button-lg) {
+    font-size: ${dt('modx.font.size.lg')};
+    min-height: ${dt('modx.control.height')};
+    box-sizing: border-box;
+}
+
+.p-button.p-button-icon-only:not(.p-button-sm):not(.p-button-lg) {
+    width: ${dt('modx.control.height')};
+    height: ${dt('modx.control.height')};
+    min-height: ${dt('modx.control.height')};
+    padding: 0;
+}
+`
 
 export const colorScheme = {
   light: {
@@ -156,5 +176,6 @@ export const colorScheme = {
 
 export default {
   root,
-  colorScheme
+  colorScheme,
+  css
 }

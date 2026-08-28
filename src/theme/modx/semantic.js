@@ -4,15 +4,16 @@
  * Density and geometry come from the manager custom properties in
  * `_build/templates/default/sass/index.scss`:
  *
- *   --modx-mgr-field-height-min   2rem      form control height
+ *   --modx-mgr-field-height-min   2rem      Ext form field floor
  *   --modx-mgr-field-padding      0.45rem   inner field padding
  *   --modx-mgr-field-trigger-width 30px     select / spinner trigger
  *   --modx-mgr-global-spacing     1rem      panel spacing
  *   --modx-mgr-radius-subtle      3px       fields, buttons, tabs
  *   --modx-mgr-global-radius      4px       panels, overlays
  *
- * A 13px base (`$bodyFontSize`) at line-height 1.4 with 0.375rem vertical
- * padding lands on the 32px control height used across the manager.
+ * Toolbar `.x-btn` (Save / Copy) renders at 36px. That is the Normal control
+ * height (`modx.control.height` = 2.25rem), applied to PrimeVue buttons and
+ * single-line fields in the preset CSS — not the Ext field floor above.
  */
 
 import { dark } from './dark.js'

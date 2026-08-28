@@ -22,6 +22,7 @@ import drawer from './components/drawer.js'
 import fieldset from './components/fieldset.js'
 import fileupload from './components/fileupload.js'
 import inlinemessage from './components/inlinemessage.js'
+import inputgroup from './components/inputgroup.js'
 import inputnumber from './components/inputnumber.js'
 import message from './components/message.js'
 import multiselect from './components/multiselect.js'
@@ -32,6 +33,7 @@ import select from './components/select.js'
 import tabs from './components/tabs.js'
 import tag from './components/tag.js'
 import toast from './components/toast.js'
+import togglebutton from './components/togglebutton.js'
 import toggleswitch from './components/toggleswitch.js'
 import toolbar from './components/toolbar.js'
 import tooltip from './components/tooltip.js'
@@ -53,6 +55,7 @@ export const components = {
   fieldset,
   fileupload,
   inlinemessage,
+  inputgroup,
   inputnumber,
   message,
   multiselect,
@@ -63,6 +66,7 @@ export const components = {
   tabs,
   tag,
   toast,
+  togglebutton,
   toggleswitch,
   toolbar,
   tooltip,

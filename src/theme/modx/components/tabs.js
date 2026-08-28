@@ -1,18 +1,25 @@
 /**
  * Tabs tokens
  *
- * The manager tab strip (`_tabs.scss`) is not a pill row: the strip itself is
- * transparent, inactive tabs are flat with $darkestGray labels, hover fills
- * with $lightGray, and the active tab is a white panel-colored tab carrying
- * $colorSplashDark text that merges into the body below.
+ * Matches the MODX manager horizontal strip from `index.scss` / `_tabs.scss`
+ * and live `#modx-container` (#F1F1F1):
  *
- * Two things have no token: the 14px tab label ($tabFont) and the top-only
- * radius with the 1px overlap that joins the active tab to the panel. Both
- * live in the rule below.
+ *   .x-tab-panel-header ul.x-tab-strip { background: transparent }
+ *     → parent #modx-container #F1F1F1 shows through
+ *   li                 { color: #53595f; padding: 0 12px; line-height: 2.2 }
+ *   li:hover           { background: #e4e4e4; color: #000 }
+ *   li.x-tab-strip-active { background: #fff; color: #09121c }
+ *
+ * Nested Ext panels use #FBFBFB for the strip; page-level Vue tabs must use
+ * the container gray so the white active tab reads (surface.50 / #FBFBFB is
+ * too close to white and collapses the hierarchy).
+ *
+ * Top-only radius and the 1px overlap that joins the active tab to the panel
+ * are not tokenized and live in the rule below.
  */
 
 export const tablist = {
-  background: 'transparent',
+  background: '#F1F1F1',
   borderWidth: '0 0 1px 0',
   borderColor: '{content.border.color}'
 }
@@ -23,7 +30,9 @@ export const tab = {
   borderColor: 'transparent',
   hoverBorderColor: 'transparent',
   activeBorderColor: 'transparent',
-  padding: '0.375rem 0.75rem',
+  // Ext `.x-tab-strip li` → padding 0 12px; wrap adds 2px top.
+  // Keep a little vertical pad so line-height 2.2 still reads ~39px tall.
+  padding: '0.25rem 0.75rem',
   fontWeight: '400',
   margin: '0',
   gap: '0.375rem',
@@ -39,7 +48,7 @@ export const tab = {
 export const tabpanel = {
   background: '{content.background}',
   color: '{content.color}',
-  padding: '0.75rem',
+  padding: '0.9375rem',
   focusRing: {
     width: '{focus.ring.width}',
     style: '{focus.ring.style}',
@@ -64,42 +73,70 @@ export const activeBar = {
 
 export const colorScheme = {
   light: {
+    tablist: {
+      background: '#F1F1F1'
+    },
     tab: {
+      // Ext inactive label #53595F
+      color: '#53595F',
       hoverBackground: '{surface.300}',
-      activeBackground: '{content.background}',
-      color: '{surface.800}',
       hoverColor: '{surface.950}',
+      // White active tab on #F1F1F1 + splash-dark label (#09121c)
+      activeBackground: '{content.background}',
       activeColor: '{navy.900}'
     }
   },
   dark: {
+    tablist: {
+      background: '{surface.900}'
+    },
     tab: {
-      hoverBackground: '{surface.800}',
-      activeBackground: '{content.background}',
       color: '{text.muted.color}',
+      hoverBackground: '{surface.800}',
       hoverColor: '{text.color}',
+      activeBackground: '{content.background}',
       activeColor: '{primary.color}'
     }
   }
 }
 
 export const css = ({ dt }) => `
+.p-tablist {
+    background: ${dt('tabs.tablist.background')};
+    border-bottom: 1px solid ${dt('content.border.color')};
+    padding-top: 2px;
+}
+
+.p-tablist-tab-list {
+    background: transparent;
+    border: 0;
+    gap: 0;
+}
+
 .p-tab {
     font-size: ${dt('modx.font.size.lg')};
+    line-height: 2.2;
     border-top-left-radius: ${dt('border.radius.sm')};
     border-top-right-radius: ${dt('border.radius.sm')};
 }
 
 .p-tab-active {
     position: relative;
+    z-index: 1;
 }
 
+/* Cover the tablist border so the white tab joins the panel body. */
 .p-tab-active::after {
     content: '';
     position: absolute;
     inset: auto 0 -1px 0;
     height: 1px;
     background: ${dt('tabs.tab.active.background')};
+}
+
+.p-tabpanels {
+    background: ${dt('tabs.tabpanel.background')};
+    border-radius: 0 0 ${dt('border.radius.sm')} ${dt('border.radius.sm')};
 }
 `
 

@@ -272,10 +272,9 @@ import { ref, computed, onMounted } from 'vue'
 // Pinia из Import Map
 import { createPinia } from 'pinia'
 
-// PrimeVue компоненты из Import Map
-import Button from 'primevue/button'
-import DataTable from 'primevue/datatable'
-import Column from 'primevue/column'
+// PrimeVue из Import Map (только barrel — не primevue/button)
+// Subpath-импорты бандлятся отдельно и ломают тему (два экземпляра Theme).
+import { Button, Column, DataTable, PrimeVue, ModxManagerTheme } from 'primevue'
 
 // Composables из VueTools
 import { useLexicon } from '@vuetools/useLexicon'

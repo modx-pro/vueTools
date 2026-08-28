@@ -19,7 +19,10 @@ import { components } from './components.js'
 
 /**
  * $bodyfonts, $codefonts and the 11/12/13/14px steps from
- * `_colors-and-vars.scss`
+ * `_colors-and-vars.scss`.
+ *
+ * `control.height` matches the rendered MODX manager `.x-btn` (Save / Copy ≈
+ * 36px), not `--modx-mgr-field-height-min` (2rem), which is the Ext field floor.
  */
 export const extend = {
   modx: {
@@ -35,6 +38,13 @@ export const extend = {
         lg: '0.875rem'
       },
       lineHeight: '1.4'
+    },
+    control: {
+      height: '2.25rem'
+    },
+    space: {
+      /** Matches `#modx-resource-main-left` panel padding (15px). */
+      panel: '15px'
     }
   },
   colorScheme: {
@@ -81,6 +91,28 @@ export const css = ({ dt }) => `
 .p-inputchips-input-item.p-inputchips-input-item input,
 .p-terminal-prompt-value.p-terminal-prompt-value {
     font-size: ${dt('modx.font.size.base')};
+}
+
+/* Single-line controls share the MODX .x-btn height (Normal = 36px). */
+.p-inputtext:not(.p-inputtext-sm):not(.p-inputtext-lg),
+.p-select:not(.p-select-sm):not(.p-select-lg),
+.p-multiselect:not(.p-multiselect-sm):not(.p-multiselect-lg),
+.p-datepicker:not(.p-datepicker-sm):not(.p-datepicker-lg) .p-datepicker-input,
+.p-autocomplete:not(.p-autocomplete-sm):not(.p-autocomplete-lg) .p-autocomplete-input,
+.p-inputnumber:not(.p-inputnumber-sm):not(.p-inputnumber-lg) .p-inputnumber-input,
+.p-textarea:not(.p-textarea-sm):not(.p-textarea-lg) {
+    font-size: ${dt('modx.font.size.lg')};
+}
+
+.p-inputtext:not(.p-inputtext-sm):not(.p-inputtext-lg),
+.p-select:not(.p-select-sm):not(.p-select-lg),
+.p-multiselect:not(.p-multiselect-sm):not(.p-multiselect-lg),
+.p-datepicker:not(.p-datepicker-sm):not(.p-datepicker-lg) .p-datepicker-input,
+.p-autocomplete:not(.p-autocomplete-sm):not(.p-autocomplete-lg) .p-autocomplete-input,
+.p-inputnumber:not(.p-inputnumber-sm):not(.p-inputnumber-lg) .p-inputnumber-input {
+    height: ${dt('modx.control.height')};
+    min-height: ${dt('modx.control.height')};
+    box-sizing: border-box;
 }
 `
 

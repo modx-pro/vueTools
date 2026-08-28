@@ -2,20 +2,21 @@
  * Panel tokens
  *
  * Manager panels are plain boxes: 1px border, bold 13px header separated by a
- * rule, content on the panel spacing scale.
+ * rule, content on the panel spacing scale (same inset as Card body /
+ * `#modx-resource-main-left`: 15px / `{modx.space.panel}`).
  */
 
 export const header = {
   background: 'transparent',
   color: '{text.color}',
-  padding: '0.5rem 0.75rem',
+  padding: '{modx.space.panel}',
   borderWidth: '0 0 1px 0',
   borderColor: '{content.border.color}',
   borderRadius: '0'
 }
 
 export const toggleableHeader = {
-  padding: '0.25rem 0.75rem'
+  padding: '{modx.space.panel}'
 }
 
 export const title = {
@@ -23,11 +24,11 @@ export const title = {
 }
 
 export const content = {
-  padding: '0.75rem'
+  padding: '{modx.space.panel}'
 }
 
 export const footer = {
-  padding: '0 0.75rem 0.75rem 0.75rem'
+  padding: '0 {modx.space.panel} {modx.space.panel} {modx.space.panel}'
 }
 
 export default {

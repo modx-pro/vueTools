@@ -117,6 +117,8 @@ app.mount('#my-app');
 
 `Aura` is still exported for extras that already use it. If you import from `primevue`, you do not need to change `external`: `Modx` ships in the same `primevue.min.js` bundle. Optional Import Map aliases: `vuetools`, `vuetools/theme`.
 
+**Do not** import `primevue/button`, `primevue/config`, etc. With `external: ['primevue']` those subpaths are bundled from `node_modules` and create a second `@primeuix` Theme (and, if the vendor still rewrites Vue to `./vue.min.js`, a second Vue). Use named imports from `primevue` only.
+
 ## Version
 
 1.1.3-pl
