@@ -13,7 +13,7 @@ use MODX\Revolution\modX;
  */
 class VueCore
 {
-    public const VERSION = '1.1.2-pl';
+    public const VERSION = '1.1.3-pl';
 
     protected modX $modx;
     protected array $namespace;
@@ -63,6 +63,9 @@ class VueCore
                 'vue' => $vendorUrl . 'vue.min.js',
                 'pinia' => $vendorUrl . 'pinia.min.js',
                 'primevue' => $vendorUrl . 'primevue.min.js',
+                // Same bundle: the Modx preset ships with the PrimeVue exports
+                'vuetools' => $vendorUrl . 'primevue.min.js',
+                'vuetools/theme' => $vendorUrl . 'primevue.min.js',
                 '@vuetools/useApi' => $composablesUrl . 'useApi.min.js',
                 '@vuetools/useLexicon' => $composablesUrl . 'useLexicon.min.js',
                 '@vuetools/useModx' => $composablesUrl . 'useModx.min.js',

@@ -9,6 +9,10 @@
 export { default as PrimeVue } from 'primevue/config'
 export { default as Aura } from '@primeuix/themes/aura'
 
+// Native MODX 3 manager theme, also served under the vuetools/theme specifier
+export { Modx, ModxManagerTheme, ModxTheme } from '../theme/modx/index.js'
+export { definePreset } from '@primeuix/themes'
+
 // Services
 export { default as ConfirmationService } from 'primevue/confirmationservice'
 export { default as ToastService } from 'primevue/toastservice'
