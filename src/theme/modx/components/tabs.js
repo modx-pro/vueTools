@@ -8,14 +8,19 @@
  *     → parent #modx-container #F1F1F1 shows through
  *   li                 { color: #53595f; padding: 0 12px; line-height: 2.2 }
  *   li:hover           { background: #e4e4e4; color: #000 }
- *   li.x-tab-strip-active { background: #fff; color: #09121c }
+ *   li.x-tab-strip-active { background: #fff }
+ *   .x-tab-strip-text (active) → splash / primary #234368
+ *
+ * Top-level Ext tabs have no colored accent bar — active state is white fill
+ * + splash label only. Nested Ext / ms3-window strips with box-shadow are a
+ * different pattern and must not leak into page-level Vue Tabs.
  *
  * Nested Ext panels use #FBFBFB for the strip; page-level Vue tabs must use
  * the container gray so the white active tab reads (surface.50 / #FBFBFB is
  * too close to white and collapses the hierarchy).
  *
  * Top-only radius and the 1px overlap that joins the active tab to the panel
- * are not tokenized and live in the rule below.
+ * live in the CSS rule below.
  */
 
 export const tablist = {
@@ -81,9 +86,9 @@ export const colorScheme = {
       color: '#53595F',
       hoverBackground: '{surface.300}',
       hoverColor: '{surface.950}',
-      // White active tab on #F1F1F1 + splash-dark label (#09121c)
+      // White active tab on #F1F1F1 + splash label (matches Ext .x-tab-strip-text)
       activeBackground: '{content.background}',
-      activeColor: '{navy.900}'
+      activeColor: '{primary.color}'
     }
   },
   dark: {
