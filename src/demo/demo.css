@@ -1,0 +1,184 @@
+/**
+ * Showcase chrome
+ *
+ * Page shell only. Nothing here styles PrimeVue components: everything the
+ * components render comes from the Modx preset tokens.
+ */
+
+:root {
+  --demo-page-background: #f1f1f1;
+  --demo-surface: #ffffff;
+  --demo-border: #e4e4e4;
+  --demo-text: #2a2a2a;
+  --demo-text-muted: #686868;
+  --demo-brand: #234368;
+}
+
+.p-dark {
+  --demo-page-background: #12161b;
+  --demo-surface: #1b2027;
+  --demo-border: #343c45;
+  --demo-text: #f2f5f8;
+  --demo-text-muted: #7c8a99;
+  --demo-brand: #93b6dd;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--demo-page-background);
+  color: var(--demo-text);
+  font: normal 13px/1.4 -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    Oxygen-Sans, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.demo {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 1.5rem 1rem 4rem;
+}
+
+.demo-bar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem 0;
+  margin-bottom: 1.5rem;
+  background: var(--demo-page-background);
+  border-bottom: 1px solid var(--demo-border);
+}
+
+.demo-bar h1 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--demo-brand);
+}
+
+.demo-bar p {
+  margin: 0;
+  color: var(--demo-text-muted);
+}
+
+.demo-bar-actions {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.demo-section {
+  margin-bottom: 1.5rem;
+  background: var(--demo-surface);
+  border: 1px solid var(--demo-border);
+  border-radius: 4px;
+}
+
+.demo-section > h2 {
+  margin: 0;
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid var(--demo-border);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.demo-section-body {
+  padding: 0.75rem;
+}
+
+.demo-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.demo-row:last-child {
+  margin-bottom: 0;
+}
+
+.demo-label {
+  flex: 0 0 8.5rem;
+  color: var(--demo-text-muted);
+}
+
+.demo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  gap: 0.75rem;
+}
+
+.demo-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.demo-field > label {
+  font-weight: 700;
+}
+
+.demo-row-spaced {
+  margin-top: 0.75rem;
+}
+
+.demo-check {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+.demo-slider {
+  width: 12rem;
+}
+
+.demo-hint {
+  color: var(--demo-text-muted);
+  font-size: 12px;
+  font-style: italic;
+}
+
+.demo-row-stack {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.demo-context {
+  display: grid;
+  place-items: center;
+  height: 5rem;
+  border: 1px dashed var(--demo-border);
+  border-radius: 3px;
+  color: var(--demo-text-muted);
+}
+
+.demo-popover {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  width: 16rem;
+}
+
+.demo-progress {
+  flex: 1 1 12rem;
+  max-width: 20rem;
+}
+
+.demo-spinner {
+  width: 1.75rem;
+  height: 1.75rem;
+}
+
+@media (max-width: 640px) {
+  .demo-label {
+    flex-basis: 100%;
+  }
+}

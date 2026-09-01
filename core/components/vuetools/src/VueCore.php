@@ -13,7 +13,7 @@ use MODX\Revolution\modX;
  */
 class VueCore
 {
-    public const VERSION = '1.1.2-pl';
+    public const VERSION = '1.1.3-pl';
 
     protected modX $modx;
     protected array $namespace;
@@ -57,17 +57,30 @@ class VueCore
 
         $vendorUrl = $this->assetsUrl . 'vendor/';
         $composablesUrl = $this->assetsUrl . 'composables/';
+        // Bust browser/HTTP cache when vendor or composable assets are rebuilt
+        // (import maps without ?v= keep stale primevue.min.js and break new named exports).
+        $vueQ = $this->assetQuery('vendor/vue.min.js');
+        $piniaQ = $this->assetQuery('vendor/pinia.min.js');
+        $primevueQ = $this->assetQuery('vendor/primevue.min.js');
+        $useApiQ = $this->assetQuery('composables/useApi.min.js');
+        $useLexiconQ = $this->assetQuery('composables/useLexicon.min.js');
+        $useModxQ = $this->assetQuery('composables/useModx.min.js');
+        $usePermissionQ = $this->assetQuery('composables/usePermission.min.js');
+        $useLocaleQ = $this->assetQuery('composables/usePrimeVueLocale.min.js');
 
         $importMap = [
             'imports' => [
-                'vue' => $vendorUrl . 'vue.min.js',
-                'pinia' => $vendorUrl . 'pinia.min.js',
-                'primevue' => $vendorUrl . 'primevue.min.js',
-                '@vuetools/useApi' => $composablesUrl . 'useApi.min.js',
-                '@vuetools/useLexicon' => $composablesUrl . 'useLexicon.min.js',
-                '@vuetools/useModx' => $composablesUrl . 'useModx.min.js',
-                '@vuetools/usePermission' => $composablesUrl . 'usePermission.min.js',
-                '@vuetools/usePrimeVueLocale' => $composablesUrl . 'usePrimeVueLocale.min.js',
+                'vue' => $vendorUrl . 'vue.min.js' . $vueQ,
+                'pinia' => $vendorUrl . 'pinia.min.js' . $piniaQ,
+                'primevue' => $vendorUrl . 'primevue.min.js' . $primevueQ,
+                // Same bundle: the Modx preset ships with the PrimeVue exports
+                'vuetools' => $vendorUrl . 'primevue.min.js' . $primevueQ,
+                'vuetools/theme' => $vendorUrl . 'primevue.min.js' . $primevueQ,
+                '@vuetools/useApi' => $composablesUrl . 'useApi.min.js' . $useApiQ,
+                '@vuetools/useLexicon' => $composablesUrl . 'useLexicon.min.js' . $useLexiconQ,
+                '@vuetools/useModx' => $composablesUrl . 'useModx.min.js' . $useModxQ,
+                '@vuetools/usePermission' => $composablesUrl . 'usePermission.min.js' . $usePermissionQ,
+                '@vuetools/usePrimeVueLocale' => $composablesUrl . 'usePrimeVueLocale.min.js' . $useLocaleQ,
                 '@vuetools/' => $composablesUrl,
             ]
         ];
@@ -108,11 +121,38 @@ class VueCore
         $vendorUrl = $this->assetsUrl . 'vendor/';
 
         // VueTools styles (PrimeVue theme + PrimeIcons)
-        $this->modx->regClientCSS($vendorUrl . 'vuetools.css');
+        $this->modx->regClientCSS($vendorUrl . 'vuetools.css' . $this->assetQuery('vendor/vuetools.css'));
 
         $this->stylesIncluded = true;
 
         return true;
+    }
+
+    /**
+     * Cache-bust query for a VueTools asset under assets/components/vuetools/.
+     *
+     * Uses filemtime when the file is readable, otherwise package VERSION.
+     */
+    protected function assetQuery(string $relativePath): string
+    {
+        $relativePath = ltrim(str_replace('\\', '/', $relativePath), '/');
+        $candidates = [];
+
+        $assetsPath = (string) $this->modx->getOption('assets_path', null, '');
+        if ($assetsPath !== '') {
+            $candidates[] = rtrim($assetsPath, '/') . '/components/vuetools/' . $relativePath;
+        }
+        if (defined('MODX_ASSETS_PATH')) {
+            $candidates[] = rtrim(MODX_ASSETS_PATH, '/') . '/components/vuetools/' . $relativePath;
+        }
+
+        foreach ($candidates as $path) {
+            if (is_file($path)) {
+                return '?v=' . (string) filemtime($path);
+            }
+        }
+
+        return '?v=' . self::VERSION;
     }
 
     /**

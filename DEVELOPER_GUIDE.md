@@ -1,8 +1,8 @@
-# VueTools - Руководство разработчика
+# VueTools: руководство разработчика
 
 ## Обзор
 
-**VueTools** — это базовый пакет, предоставляющий Vue 3 стек для MODX 3.x компонентов через ES Modules Import Map. Позволяет нескольким компонентам использовать общие библиотеки без дублирования кода.
+VueTools отдаёт стек Vue 3 для компонентов MODX 3.x через ES Modules Import Map. Несколько extras берут одни и те же библиотеки и не копируют их в свой бандл.
 
 ### Состав пакета
 
@@ -10,18 +10,18 @@
 |------------|--------|------------|
 | Vue 3 | 3.5.x | Реактивный фреймворк |
 | Pinia | 3.0.x | State management |
-| PrimeVue | 4.3.x | UI компоненты |
+| PrimeVue | 4.5.x | UI-компоненты (`Modx` и `Aura`) |
 | PrimeIcons | 7.0.x | Иконки |
 
-### Composables (хелперы)
+### Composables
 
 | Модуль | Назначение |
 |--------|------------|
-| `useLexicon` | Работа с лексиконами MODX |
-| `useApi` | HTTP клиент для стандартного MODX API |
-| `useModx` | Доступ к глобальному объекту MODx |
+| `useLexicon` | Лексиконы MODX |
+| `useApi` | HTTP-клиент к стандартному connector API MODX |
+| `useModx` | Глобальный объект `MODx` |
 | `usePermission` | Проверка прав пользователя |
-| `usePrimeVueLocale` | Локали PrimeVue для DataTable, DatePicker, Calendar (ru/en) |
+| `usePrimeVueLocale` | Локали PrimeVue для DataTable, DatePicker, Calendar (`de`, `en`, `es`, `fr`, `pl`, `ru`, `uk`) |
 
 ---
 
@@ -37,6 +37,8 @@ VueTools регистрирует Import Map в `<head>` страницы мен
     "vue": "/assets/components/vuetools/vendor/vue.min.js",
     "pinia": "/assets/components/vuetools/vendor/pinia.min.js",
     "primevue": "/assets/components/vuetools/vendor/primevue.min.js",
+    "vuetools": "/assets/components/vuetools/vendor/primevue.min.js",
+    "vuetools/theme": "/assets/components/vuetools/vendor/primevue.min.js",
     "@vuetools/useApi": "/assets/components/vuetools/composables/useApi.min.js",
     "@vuetools/useLexicon": "/assets/components/vuetools/composables/useLexicon.min.js",
     "@vuetools/useModx": "/assets/components/vuetools/composables/useModx.min.js",
@@ -46,28 +48,30 @@ VueTools регистрирует Import Map в `<head>` страницы мен
 }
 ```
 
+Алиасы `vuetools` и `vuetools/theme` ведут на тот же файл, что и `primevue`. Из них доступны named exports `Modx`, `ModxManagerTheme`, `ModxTheme` и остальной API PrimeVue.
+
 ### Как это работает
 
-1. Плагин `VueCoreManager` срабатывает на событие `OnManagerPageInit`
+1. Плагин `VueCoreManager` срабатывает на `OnManagerPageInit`
 2. Регистрирует Import Map в начале `<head>` (до любых ES modules)
-3. Подключает CSS стили PrimeVue (изолированы классом `.vueApp`)
-4. Ваш компонент загружает свои ES modules, которые импортируют из Import Map
+3. Подключает CSS PrimeVue (изоляция через класс `.vueApp`)
+4. Ваш компонент грузит свои ES modules и импортирует зависимости из Import Map
 
 ---
 
 ## Локализация PrimeVue
 
-По умолчанию PrimeVue отображает подписи на английском: фильтры DataTable («Starts with», «Contains», «Clear»), кнопки и заголовки DatePicker/Calendar («Today», названия месяцев и дней недели) и т.д.
+По умолчанию PrimeVue пишет подписи по-английски: фильтры DataTable («Starts with», «Contains», «Clear»), кнопки и заголовки DatePicker/Calendar («Today», месяцы, дни недели) и так далее.
 
-VueTools поставляет готовые локали (ru, en) и хелпер для подстановки текущего языка MODX:
+VueTools кладёт готовые локали и хелпер, который подставляет язык менеджера:
 
 ```javascript
 import { getPrimeVueLocale } from '@vuetools/usePrimeVueLocale'
-import PrimeVue from 'primevue/config'
+import { PrimeVue, ModxManagerTheme } from 'primevue'
 
 // Локаль по текущему языку менеджера (MODx.cultureKey)
 const locale = getPrimeVueLocale()
-app.use(PrimeVue, { theme: { preset: Aura }, locale })
+app.use(PrimeVue, { theme: ModxManagerTheme, locale })
 ```
 
 Явно указать язык:
@@ -76,7 +80,97 @@ app.use(PrimeVue, { theme: { preset: Aura }, locale })
 const locale = getPrimeVueLocale('ru')
 ```
 
-Доступные коды: `de`, `en`, `es`, `fr`, `pl`, `ru`, `uk`. Для неизвестного кода используется английская локаль. Локали берутся из [primelocale](https://github.com/primefaces/primelocale); при необходимости другие языки можно добавить в `usePrimeVueLocale.js`, импортируя из `primelocale/js/<код>.js`.
+Коды: `de`, `en`, `es`, `fr`, `pl`, `ru`, `uk`. Неизвестный код даёт английскую локаль. Источник: [primelocale](https://github.com/primefaces/primelocale). Другой язык можно добавить в `usePrimeVueLocale.js` импортом из `primelocale/js/<код>.js`.
+
+---
+
+## Modx theme (PrimeVue 4)
+
+Preset `Modx` повторяет менеджер MODX Revolution 3 в PrimeVue 4. База Nora (компактный прямоугольный preset), не Aura. Цвета и размеры из Sass менеджера: `$colorSplash: #234368`, radius 3px, body 13px.
+
+### Импорт
+
+```javascript
+import { PrimeVue, Modx, ModxManagerTheme, ModxTheme, Button } from 'primevue'
+// или
+import { Modx, ModxManagerTheme } from 'vuetools/theme'
+```
+
+`Aura` по-прежнему экспортируется из `primevue`. Extras с `external: ['primevue']` менять не нужно: `Modx` лежит в том же `primevue.min.js`.
+
+### Подключение в менеджере
+
+У менеджера нет тёмной темы, ExtJS остаётся светлым. Если оставить `darkModeSelector: 'system'`, потемнеют только Vue-виджеты. Берите готовый хелпер:
+
+```javascript
+app.use(PrimeVue, {
+  theme: ModxManagerTheme, // { preset: Modx, options: { darkModeSelector: 'none' } }
+  locale: getPrimeVueLocale()
+})
+```
+
+### Light / dark вне менеджера
+
+Для showcase и отдельных приложений:
+
+```javascript
+app.use(PrimeVue, { theme: ModxTheme, locale: getPrimeVueLocale() })
+// тёмный режим: class="p-dark" на предке (например .vueApp.p-dark)
+```
+
+### Кнопки менеджера
+
+| Действие | Severity | Визуал |
+|----------|----------|--------|
+| Save / Create | `success` | зелёный `$green` `#6CB24A` |
+| Toolbar / Cancel | `secondary` | белый + 1px border |
+| Primary focus / selection | default (без severity) | splash navy `#234368` |
+
+`semantic.primary` остаётся navy (focus ring, selected, tabs, checkbox). Зелёный Save только через `severity="success"`.
+
+### Три яруса токенов
+
+| Файл | Что править |
+|------|-------------|
+| `src/theme/modx/primitive.js` | Палитра, radius |
+| `src/theme/modx/semantic.js` + `dark.js` | primary / surface / form / overlay; в dark только `colorScheme.dark` |
+| `src/theme/modx/components/*.js` | Плотность и вид конкретного компонента |
+
+CSS в `preset.js` или `component.css` пишите только когда токена не хватает (базовый шрифт 13px, стык tab strip). Без `!important`.
+
+### Добавить component file
+
+1. Файл `src/theme/modx/components/foo.js` по форме Nora (`root`, при необходимости `colorScheme`).
+2. Экспорт из `src/theme/modx/components.js`.
+3. Если отличий от Nora нет, файл не нужен.
+
+### Расширение без форка
+
+```javascript
+import { definePreset, Modx } from 'primevue'
+
+const MyExtra = definePreset(Modx, {
+  semantic: {
+    primary: { 500: '#1a3a5c' }
+  }
+})
+```
+
+### Demo
+
+```bash
+npm run demo          # http://localhost:5273
+npm run build:demo    # статическая сборка showcase
+```
+
+Исходники: `src/demo/`. Конфиг: `vite.config.demo.js` (не перехватывает `npm run build`).
+
+### Отличия от Aura
+
+- База Nora
+- Radius 3px, body 13px, высота полей около 32px
+- Splash navy `#234368`, плотная таблица и tab strip как в менеджере
+- Save = `severity="success"`, toolbar = `severity="secondary"`
 
 ---
 
@@ -127,7 +221,7 @@ export default defineConfig({
 })
 ```
 
-**Ключевой момент:** Массив `external` указывает Vite НЕ включать эти зависимости в бандл. Браузер загрузит их из Import Map.
+**Важно:** массив `external` говорит Vite не класть эти пакеты в бандл. Браузер возьмёт их из Import Map.
 
 ### Шаг 2: Загрузка скриптов в PHP контроллере
 
@@ -151,10 +245,10 @@ class MyComponentManagerController extends modExtraManagerController
 }
 ```
 
-**Критично:**
-- Используйте `regClientStartupHTMLBlock()` для `<script type="module">`
-- **НЕ** используйте `addJavascript()` или `addLastJavascript()` для ES modules
-- Каждый скрипт добавляйте **отдельным** вызовом (не объединяйте в одну строку с переносами)
+**Важно:**
+- Для `<script type="module">` используйте `regClientStartupHTMLBlock()`
+- Не используйте `addJavascript()` или `addLastJavascript()` для ES modules
+- Каждый скрипт отдельным вызовом (не склеивайте теги в одну multiline-строку)
 
 ```php
 // ✅ ПРАВИЛЬНО - отдельные вызовы
@@ -178,10 +272,9 @@ import { ref, computed, onMounted } from 'vue'
 // Pinia из Import Map
 import { createPinia } from 'pinia'
 
-// PrimeVue компоненты из Import Map
-import Button from 'primevue/button'
-import DataTable from 'primevue/datatable'
-import Column from 'primevue/column'
+// PrimeVue из Import Map (только barrel — не primevue/button)
+// Subpath-импорты бандлятся отдельно и ломают тему (два экземпляра Theme).
+import { Button, Column, DataTable, PrimeVue, ModxManagerTheme } from 'primevue'
 
 // Composables из VueTools
 import { useLexicon } from '@vuetools/useLexicon'
@@ -220,7 +313,7 @@ const canEdit = computed(() => hasPermission('my_component_edit'))
 
 ### useLexicon
 
-Работа с лексиконами MODX.
+Лексиконы MODX.
 
 ```javascript
 import { useLexicon } from '@vuetools/useLexicon'
@@ -240,7 +333,7 @@ if (has('my_key')) { ... }
 const allMyKeys = getByPrefix('my_component_')
 ```
 
-**Важно:** Лексиконы ищутся в `window.MODx.lang`. Загрузите топик в контроллере:
+**Важно:** лексиконы читаются из `window.MODx.lang`. Топик нужно загрузить в контроллере:
 
 ```php
 public function getLanguageTopics()
@@ -251,7 +344,7 @@ public function getLanguageTopics()
 
 ### useModx
 
-Доступ к глобальному объекту MODX.
+Глобальный объект MODX.
 
 ```javascript
 import { useModx } from '@vuetools/useModx'
@@ -290,7 +383,7 @@ if (hasAllPermissions(['view', 'edit'])) { ... }
 
 ### useApi (базовый)
 
-HTTP клиент для **стандартного** MODX connector API.
+HTTP-клиент к стандартному connector API MODX.
 
 ```javascript
 import { useApi } from '@vuetools/useApi'
@@ -307,13 +400,13 @@ const result = await post('security/user/create', {
 })
 ```
 
-**Примечание:** Этот API клиент работает со стандартным MODX connector форматом (`?action=processor/path`). Если ваш компонент использует собственный роутер, создайте свой `request.js` (см. ниже).
+**Примечание:** клиент рассчитан на стандартный connector MODX (`?action=processor/path`). Если у компонента свой роутер, заведите локальный `request.js` (см. ниже).
 
 ---
 
-## Собственный API клиент (для компонентов с роутером)
+## Собственный API-клиент (свой роутер)
 
-MiniShop3 использует собственный роутер через connector.php, поэтому создан локальный `request.js`:
+MiniShop3 ходит через свой роутер в connector.php, поэтому там лежит локальный `request.js`:
 
 ```javascript
 // src/request.js
@@ -397,7 +490,7 @@ await request.post('/api/products', { name: 'New Product' })
 
 ## Изоляция стилей
 
-PrimeVue стили изолированы с префиксом `.vueApp`. Все контейнеры Vue виджетов должны иметь этот класс:
+Стили PrimeVue живут под префиксом `.vueApp`. Контейнер Vue-виджета должен иметь этот класс:
 
 ```html
 <!-- В ExtJS панели или HTML -->
@@ -422,10 +515,7 @@ app.mount('#my-vue-app')
 import '../scss/primevue.scss';
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
-import PrimeVue from 'primevue/config'
-import Aura from '@primeuix/themes/aura'
-import ToastService from 'primevue/toastservice'
-import ConfirmationService from 'primevue/confirmationservice'
+import { PrimeVue, ModxManagerTheme, ToastService, ConfirmationService } from 'primevue'
 import { getPrimeVueLocale } from '@vuetools/usePrimeVueLocale'
 
 import MyWidget from '../components/MyWidget.vue'
@@ -438,12 +528,7 @@ function createVueApp(props = {}) {
   app.use(createPinia())
 
   app.use(PrimeVue, {
-    theme: {
-      preset: Aura,
-      options: {
-        darkModeSelector: 'none'
-      }
-    },
+    theme: ModxManagerTheme,
     locale: getPrimeVueLocale() // русский/английский по MODx.cultureKey
   })
 
@@ -510,15 +595,15 @@ window.MyComponentWidget = { init, destroy }
 
 ## Проверка наличия VueTools
 
-При отсутствии VueTools на сайте Vue модули не загрузятся, а в консоли появятся ошибки. Для улучшения UX рекомендуется реализовать проверку наличия зависимости и показывать понятное сообщение пользователю.
+Без VueTools Vue-модули не резолвятся, в консоли сыпятся ошибки. Имеет смысл проверить Import Map и показать понятный алерт.
 
 ### Принцип работы
 
-VueTools регистрирует `<script type="importmap">` с ключом `vue`. Проверка ищет этот Import Map и, если он отсутствует:
+VueTools регистрирует `<script type="importmap">` с ключом `vue`. Если карты нет:
 
-1. Удаляет все Vue module скрипты (предотвращает ошибки в консоли)
-2. Показывает MODX алерт с сообщением об установке зависимости
-3. Устанавливает глобальный флаг `window.MY_COMPONENT_VUE_CORE_MISSING = true`
+1. Удаляет Vue module-скрипты (чтобы не шумела консоль)
+2. Показывает MODX-алерт с просьбой установить зависимость
+3. Ставит флаг `window.MY_COMPONENT_VUE_CORE_MISSING = true`
 
 ### Реализация в PHP контроллере
 
@@ -626,7 +711,7 @@ JS;
 
 ### Использование
 
-Вместо прямого вызова `regClientStartupHTMLBlock()` используйте новый метод:
+Вместо прямого `regClientStartupHTMLBlock()` вызывайте `addVueModule()`:
 
 ```php
 public function loadCustomCssJs()
@@ -665,13 +750,13 @@ $_lang['mycomponent_vuetools_required'] = 'VueTools package is required for MyCo
 
 | Без проверки | С проверкой |
 |--------------|-------------|
-| Ошибки `Failed to resolve module specifier "vue"` в консоли | Чистая консоль |
-| Vue виджеты не работают, пустые контейнеры | Понятный MODX алерт с инструкцией |
-| Пользователь не понимает проблему | Пользователь знает что делать |
+| В консоли `Failed to resolve module specifier "vue"` | Консоль чистая |
+| Пустые контейнеры Vue | MODX-алерт с инструкцией |
+| Неясно, чего не хватает | Понятно, что ставить |
 
 ### Проверка в JavaScript
 
-При необходимости можно проверить флаг в клиентском коде:
+Флаг можно читать из своего кода:
 
 ```javascript
 // В ExtJS панели или другом скрипте
@@ -686,25 +771,26 @@ if (window.MY_COMPONENT_VUE_CORE_MISSING) {
 ## Чеклист интеграции
 
 - [ ] Добавить `vuetools` в зависимости пакета (setup options)
-- [ ] Настроить `external` в vite.config.js (vue, pinia, primevue, все @vuetools/* composables)
+- [ ] Настроить `external` в vite.config.js (vue, pinia, primevue, все `@vuetools/*`)
 - [ ] Настроить postcss prefix selector для изоляции стилей
-- [ ] **Реализовать `addVueModule()` с проверкой зависимости** (см. раздел выше)
-- [ ] Добавить лексиконы для сообщения об ошибке (`_error`, `_vuetools_required`)
-- [ ] Использовать `addVueModule()` вместо `regClientStartupHTMLBlock()` для ES modules
-- [ ] Добавить `class="vueApp"` к контейнерам Vue
-- [ ] При использовании DataTable/DatePicker/Calendar: передать `locale: getPrimeVueLocale()` в `app.use(PrimeVue, { ... })`
+- [ ] Реализовать `addVueModule()` с проверкой зависимости (см. раздел выше)
+- [ ] Добавить лексиконы ошибки (`_error`, `_vuetools_required`)
+- [ ] Для ES modules вызывать `addVueModule()`, а не голый `regClientStartupHTMLBlock()`
+- [ ] Добавить `class="vueApp"` на контейнеры Vue
+- [ ] Для DataTable / DatePicker / Calendar передать `locale: getPrimeVueLocale()` в `app.use(PrimeVue, { ... })`
+- [ ] В менеджере: `ModxManagerTheme` (или `preset: Modx` + `darkModeSelector: 'none'`); Save = `severity="success"`
+- [ ] Если импорт идёт из `primevue`, `external` менять не нужно (`Modx` уже в бандле)
 - [ ] Загрузить топики лексиконов в контроллере
-- [ ] Создать локальный `request.js` если используете собственный роутер
+- [ ] При своём роутере завести локальный `request.js`
 
 ---
 
 ## Примеры компонентов
 
-- **MiniShop3** — полная интеграция с собственным роутером
-- Репозиторий: https://github.com/modx-pro/MiniShop3
+- MiniShop3: интеграция со своим роутером, https://github.com/modx-pro/MiniShop3
 
 ---
 
 ## Поддержка
 
-- GitHub Issues: https://github.com/modx-pro/vuetools/issues
+GitHub Issues: https://github.com/modx-pro/vuetools/issues
