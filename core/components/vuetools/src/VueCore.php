@@ -170,7 +170,17 @@ class VueCore
     }
 
     /**
-     * Include all Vue core resources (Import Map + client theme + CSS)
+     * Register ExtJS combo for system setting vuetools.theme.
+     */
+    public function includeManagerCombos(): void
+    {
+        $this->modx->regClientStartupScript(
+            $this->assetsUrl . 'js/mgr/combo.theme.js' . $this->assetQuery('js/mgr/combo.theme.js')
+        );
+    }
+
+    /**
+     * Include all Vue core resources (Import Map + client theme + CSS + mgr combos)
      *
      * @return void
      */
@@ -178,6 +188,7 @@ class VueCore
     {
         $this->registerImportMap();
         $this->includeStyles();
+        $this->includeManagerCombos();
     }
 
     /**

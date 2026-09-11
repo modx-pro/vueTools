@@ -11,4 +11,4 @@ $_lang['vuetools.desc'] = 'Ядро Vue-стека для MODX компонен�
 $_lang['area_vuetools'] = 'VueTools';
 
 $_lang['setting_vuetools.theme'] = 'Тема PrimeVue';
-$_lang['setting_vuetools.theme_desc'] = 'Активная тема PrimeVue для компонентов, которые вызывают getActiveTheme() из @vuetools/useTheme. Значения: aura, modx. По умолчанию: aura. Компоненты с захардкоженной темой не меняются.';
+$_lang['setting_vuetools.theme_desc'] = 'Активная тема PrimeVue для компонентов, которые вызывают getActiveTheme() из @vuetools/useTheme. Выберите Aura или Modx. По умолчанию: Aura. Компоненты с захардкоженной темой не меняются.';

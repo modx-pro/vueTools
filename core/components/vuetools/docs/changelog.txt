@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Import Map aliases `vuetools` and `vuetools/theme` (same bundle as `primevue`; `vuetools/theme` is the version-aware theming signal)
 - Theme showcase: `npm run demo` / `npm run build:demo` (`src/demo/`, `vite.config.demo.js`)
 - Asset `?v=` cache-bust via filemtime for vendor/composables
+- System setting combo `vuetools-combo-theme` (`aura` | `modx`) for `vuetools.theme`
 
 ### Fixed
 - One VueTools service under both `vuetools` and `vueTools` keys, so Import Map and CSS are not registered twice (#11)

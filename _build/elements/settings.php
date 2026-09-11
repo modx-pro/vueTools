@@ -9,7 +9,7 @@
 
 return [
     'theme' => [
-        'xtype' => 'textfield',
+        'xtype' => 'vuetools-combo-theme',
         'value' => 'aura',
         'area' => 'vuetools',
     ],
