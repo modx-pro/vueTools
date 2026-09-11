@@ -53,6 +53,10 @@ VueTools регистрирует Import Map в `<head>` страницы мен
 3. Подключает CSS стили PrimeVue (изолированы классом `.vueApp`)
 4. Ваш компонент загружает свои ES modules, которые импортируют из Import Map
 
+### Сервис VueTools
+
+Канонический доступ: `$modx->services->get('vuetools')`. Ключ `vueTools` и `getService('vueTools', 'VueTools\Service', …)` возвращают тот же объект. Не вызывайте `new \VueTools\Service` в extras: флаги Import Map и CSS живут на экземпляре.
+
 ---
 
 ## Локализация PrimeVue

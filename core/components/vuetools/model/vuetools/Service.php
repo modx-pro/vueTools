@@ -2,8 +2,14 @@
 /**
  * VueTools Service
  *
- * Entry point for MODX service container. Extends VueCore so that
- * getService('vuetools') / $modx->services->get('vuetools') resolve correctly.
+ * MODX 3 getService('vueTools', 'VueTools\Service', …) entry.
+ * Empty VueCore subclass so extras can use `instanceof \VueTools\Service`.
+ *
+ * bootstrap.php creates one instance and shares it under `vuetools` and
+ * `vueTools` (#11). Prefer the container; do not `new Service` in extras.
+ *
+ * File path is model/vuetools/ for xPDO. Package autoload only maps
+ * VueTools\* → src/, so VueCore is required below.
  *
  * @package VueTools
  */
