@@ -10,9 +10,10 @@ Shared Vue 3, Pinia, and PrimeVue for MODX Extras through an ES Modules Import M
 
 - Vue 3.5.x
 - Pinia 3.x
-- PrimeVue 4.x with the `Modx` manager theme and `Aura`
+- PrimeVue 4.x with `Aura` and the `Modx` manager theme
+- Central theme switch: system setting `vuetools.theme` + `getActiveTheme()` from `@vuetools/useTheme`
 - PrimeIcons 7.x
-- Composables: useApi, useLexicon, useModx, usePermission, usePrimeVueLocale (`de`, `en`, `es`, `fr`, `pl`, `ru`, `uk`)
+- Composables: useApi, useLexicon, useModx, usePermission, usePrimeVueLocale, getActiveTheme
 
 ## Requirements
 
@@ -46,26 +47,24 @@ npm run build:all
 npm run demo
 ```
 
-## Modx theme
+## Theme (central)
 
-`Modx` is a PrimeVue 4 preset that follows the MODX Revolution 3 manager: Nora base, splash `#234368`, 3px radius, 13px body. Use it in the manager instead of Aura.
+Admin setting `vuetools.theme` (`aura` default, or `modx`). VueCoreManager injects `window.VueTools = { theme }`. Migrated extras resolve it once:
 
 ```js
-import { PrimeVue, Modx, ModxManagerTheme, Button } from 'primevue'
-// or: import { Modx, ModxManagerTheme } from 'vuetools/theme'
+import { PrimeVue } from 'primevue'
+import { getActiveTheme } from '@vuetools/useTheme'
+import { getPrimeVueLocale } from '@vuetools/usePrimeVueLocale'
 
 app.use(PrimeVue, {
-  theme: ModxManagerTheme, // preset: Modx, darkModeSelector: 'none'
+  ...getActiveTheme(),
   locale: getPrimeVueLocale()
 })
-
-// Save in the manager is green:
-// <Button label="Save" severity="success" />
-// Toolbar buttons:
-// <Button label="Cancel" severity="secondary" />
 ```
 
-For standalone apps and the showcase, use `ModxTheme` and add class `p-dark` on an ancestor to switch dark mode. See [DEVELOPER_GUIDE.md](DEVELOPER_GUIDE.md#modx-theme-primevue-4).
+Flip the setting → no consumer rebuild. Extras that still hardcode `Aura` or `ModxManagerTheme` keep working unchanged.
+
+`Modx` (Nora base, splash `#234368`, 3px radius, 13px body) is selected when `vuetools.theme = modx`. Save buttons use `severity="success"`; toolbar chrome uses `severity="secondary"`. Showcase / dark opt-in: `ModxTheme` + class `p-dark`. Details: [DEVELOPER_GUIDE.md](DEVELOPER_GUIDE.md).
 
 ## Usage in Extras
 
@@ -93,7 +92,8 @@ export default defineConfig({
         '@vuetools/useLexicon',
         '@vuetools/useModx',
         '@vuetools/usePermission',
-        '@vuetools/usePrimeVueLocale'
+        '@vuetools/usePrimeVueLocale',
+        '@vuetools/useTheme'
       ]
     }
   }
@@ -105,19 +105,20 @@ export default defineConfig({
 ```js
 import { createApp, ref } from 'vue';
 import { createPinia } from 'pinia';
-import { PrimeVue, ModxManagerTheme, DataTable, Button } from 'primevue';
+import { PrimeVue, DataTable, Button } from 'primevue';
 import { useApi, useLexicon } from '@modxpro-vue-core/';
 import { getPrimeVueLocale } from '@vuetools/usePrimeVueLocale';
+import { getActiveTheme } from '@vuetools/useTheme';
 
 const app = createApp(MyComponent);
 app.use(createPinia());
-app.use(PrimeVue, { theme: ModxManagerTheme, locale: getPrimeVueLocale() });
+app.use(PrimeVue, { ...getActiveTheme(), locale: getPrimeVueLocale() });
 app.mount('#my-app');
 ```
 
-`Aura` is still exported for extras that already use it. If you import from `primevue`, you do not need to change `external`: `Modx` ships in the same `primevue.min.js` bundle. Optional Import Map aliases: `vuetools`, `vuetools/theme`.
+`Aura` and `ModxManagerTheme` remain exported for gradual migration. Optional Import Map aliases: `vuetools`, `vuetools/theme`.
 
-**Do not** import `primevue/button`, `primevue/config`, etc. With `external: ['primevue']` those subpaths are bundled from `node_modules` and create a second `@primeuix` Theme (and, if the vendor still rewrites Vue to `./vue.min.js`, a second Vue). Use named imports from `primevue` only.
+**Do not** import `primevue/button`, `primevue/config`, etc. With `external: ['primevue']` those subpaths are bundled from `node_modules` and create a second `@primeuix` Theme. Use named imports from `primevue` only.
 
 ## Version
 

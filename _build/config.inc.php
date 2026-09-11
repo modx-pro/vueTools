@@ -15,8 +15,7 @@ $config = [
 
     'description' => 'Vue core stack for MODX components (Vue, Pinia, PrimeVue)',
 
-    // System settings
-    'systemSettings' => [],
+    // System settings live in _build/elements/settings.php (packaged by build.php)
 
     // Menus
     'menus' => [],

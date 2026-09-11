@@ -22,6 +22,7 @@ VueTools отдаёт стек Vue 3 для компонентов MODX 3.x че
 | `useModx` | Глобальный объект `MODx` |
 | `usePermission` | Проверка прав пользователя |
 | `usePrimeVueLocale` | Локали PrimeVue для DataTable, DatePicker, Calendar (`de`, `en`, `es`, `fr`, `pl`, `ru`, `uk`) |
+| `getActiveTheme` (`@vuetools/useTheme`) | Центральная тема из `vuetools.theme` → `{ theme }` для `app.use(PrimeVue, …)` |
 
 ---
 
@@ -43,19 +44,43 @@ VueTools регистрирует Import Map в `<head>` страницы мен
     "@vuetools/useLexicon": "/assets/components/vuetools/composables/useLexicon.min.js",
     "@vuetools/useModx": "/assets/components/vuetools/composables/useModx.min.js",
     "@vuetools/usePermission": "/assets/components/vuetools/composables/usePermission.min.js",
-    "@vuetools/usePrimeVueLocale": "/assets/components/vuetools/composables/usePrimeVueLocale.min.js"
+    "@vuetools/usePrimeVueLocale": "/assets/components/vuetools/composables/usePrimeVueLocale.min.js",
+    "@vuetools/useTheme": "/assets/components/vuetools/composables/useTheme.min.js"
   }
 }
 ```
 
-Алиасы `vuetools` и `vuetools/theme` ведут на тот же файл, что и `primevue`. Из них доступны named exports `Modx`, `ModxManagerTheme`, `ModxTheme` и остальной API PrimeVue.
+Алиасы `vuetools` и `vuetools/theme` ведут на тот же файл, что и `primevue`. Из них доступны named exports `Modx`, `ModxManagerTheme`, `ModxTheme` и остальной API PrimeVue. Ключ `vuetools/theme` ещё и version-aware сигнал: он есть только в сборках с централизованной темизацией (#22).
 
 ### Как это работает
 
-1. Плагин `VueCoreManager` срабатывает на `OnManagerPageInit`
-2. Регистрирует Import Map в начале `<head>` (до любых ES modules)
+1. Плагин `VueCoreManager` срабатывает на `OnManagerPageBeforeRender`
+2. В один блок в `<head>`: Import Map и `window.VueTools = { theme }` из `vuetools.theme` (default `aura`)
 3. Подключает CSS PrimeVue (изоляция через класс `.vueApp`)
-4. Ваш компонент грузит свои ES modules и импортирует зависимости из Import Map
+4. Ваш компонент грузит ES modules из Import Map
+
+---
+
+## Централизованная тема (PrimeVue)
+
+Одна системная настройка `vuetools.theme` задаёт тему для **мигрировавших** компонентов. Значения: `aura` (default), `modx`; новые темы добавляются только в реестр VueTools. Экспорт `Aura` остаётся настоящим Aura и не подменяется активной темой.
+
+```javascript
+import { PrimeVue } from 'primevue'
+import { getActiveTheme } from '@vuetools/useTheme'
+import { getPrimeVueLocale } from '@vuetools/usePrimeVueLocale'
+
+app.use(PrimeVue, {
+  ...getActiveTheme(),
+  locale: getPrimeVueLocale()
+})
+```
+
+Без локали достаточно `app.use(PrimeVue, getActiveTheme())`.
+
+`getActiveTheme()` читает `window.VueTools.theme`, маппит строку→пресет, неизвестное значение → Aura. Extras с захардкоженным `{ theme: { preset: Aura } }` или `ModxManagerTheme` не ломаются и глобальным флипом не переключаются — это ожидаемо.
+
+В Vite `external` добавьте `@vuetools/useTheme` рядом с остальными `@vuetools/*`.
 
 ---
 
@@ -67,11 +92,11 @@ VueTools кладёт готовые локали и хелпер, которы�
 
 ```javascript
 import { getPrimeVueLocale } from '@vuetools/usePrimeVueLocale'
-import { PrimeVue, ModxManagerTheme } from 'primevue'
+import { getActiveTheme } from '@vuetools/useTheme'
+import { PrimeVue } from 'primevue'
 
-// Локаль по текущему языку менеджера (MODx.cultureKey)
 const locale = getPrimeVueLocale()
-app.use(PrimeVue, { theme: ModxManagerTheme, locale })
+app.use(PrimeVue, { ...getActiveTheme(), locale })
 ```
 
 Явно указать язык:
@@ -87,6 +112,8 @@ const locale = getPrimeVueLocale('ru')
 ## Modx theme (PrimeVue 4)
 
 Preset `Modx` повторяет менеджер MODX Revolution 3 в PrimeVue 4. База Nora (компактный прямоугольный preset), не Aura. Цвета и размеры из Sass менеджера: `$colorSplash: #234368`, radius 3px, body 13px.
+
+В менеджере предпочтительно не хардкодить пресет, а выставить `vuetools.theme = modx` и вызывать `getActiveTheme()` (см. раздел выше). Прямой импорт `ModxManagerTheme` остаётся для showcase и постепенной миграции.
 
 ### Импорт
 
@@ -198,7 +225,8 @@ export default defineConfig({
         '@vuetools/useLexicon',
         '@vuetools/useModx',
         '@vuetools/usePermission',
-        '@vuetools/usePrimeVueLocale'
+        '@vuetools/usePrimeVueLocale',
+        '@vuetools/useTheme'
       ],
       output: {
         format: 'es',
@@ -274,7 +302,8 @@ import { createPinia } from 'pinia'
 
 // PrimeVue из Import Map (только barrel — не primevue/button)
 // Subpath-импорты бандлятся отдельно и ломают тему (два экземпляра Theme).
-import { Button, Column, DataTable, PrimeVue, ModxManagerTheme } from 'primevue'
+import { Button, Column, DataTable, PrimeVue } from 'primevue'
+import { getActiveTheme } from '@vuetools/useTheme'
 
 // Composables из VueTools
 import { useLexicon } from '@vuetools/useLexicon'
@@ -515,8 +544,9 @@ app.mount('#my-vue-app')
 import '../scss/primevue.scss';
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
-import { PrimeVue, ModxManagerTheme, ToastService, ConfirmationService } from 'primevue'
+import { PrimeVue, ToastService, ConfirmationService } from 'primevue'
 import { getPrimeVueLocale } from '@vuetools/usePrimeVueLocale'
+import { getActiveTheme } from '@vuetools/useTheme'
 
 import MyWidget from '../components/MyWidget.vue'
 
@@ -528,7 +558,7 @@ function createVueApp(props = {}) {
   app.use(createPinia())
 
   app.use(PrimeVue, {
-    theme: ModxManagerTheme,
+    ...getActiveTheme(),
     locale: getPrimeVueLocale() // русский/английский по MODx.cultureKey
   })
 
@@ -778,8 +808,9 @@ if (window.MY_COMPONENT_VUE_CORE_MISSING) {
 - [ ] Для ES modules вызывать `addVueModule()`, а не голый `regClientStartupHTMLBlock()`
 - [ ] Добавить `class="vueApp"` на контейнеры Vue
 - [ ] Для DataTable / DatePicker / Calendar передать `locale: getPrimeVueLocale()` в `app.use(PrimeVue, { ... })`
-- [ ] В менеджере: `ModxManagerTheme` (или `preset: Modx` + `darkModeSelector: 'none'`); Save = `severity="success"`
-- [ ] Если импорт идёт из `primevue`, `external` менять не нужно (`Modx` уже в бандле)
+- [ ] Тему брать через `getActiveTheme()` из `@vuetools/useTheme` (не хардкодить Aura/Modx); Save = `severity="success"`
+- [ ] В `external` добавить `@vuetools/useTheme`
+- [ ] Если импорт идёт из `primevue`, для пресетов `external` менять не нужно (`Modx` уже в бандле)
 - [ ] Загрузить топики лексиконов в контроллере
 - [ ] При своём роутере завести локальный `request.js`
 

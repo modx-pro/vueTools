@@ -3,9 +3,15 @@
  *
  * A native MODX Revolution 3 manager look, expressed as a PrimeVue preset.
  *
- *   import { PrimeVue } from 'primevue'
- *   import { Modx, ModxManagerTheme } from 'vuetools/theme'
+ * Prefer the central resolver in extras (setting `vuetools.theme` = `modx`):
  *
+ *   import { PrimeVue } from 'primevue'
+ *   import { getActiveTheme } from '@vuetools/useTheme'
+ *   app.use(PrimeVue, getActiveTheme())
+ *
+ * Direct preset use (showcase / migration):
+ *
+ *   import { Modx, ModxManagerTheme } from 'vuetools/theme'
  *   app.use(PrimeVue, { theme: ModxManagerTheme })
  *
  * Light and dark live in the same preset as semantic color schemes. There is no

@@ -2,7 +2,8 @@
 /**
  * VueCoreManager Plugin
  *
- * Registers Vue Import Map and includes CSS on manager page load.
+ * Registers Import Map + window.VueTools = { theme } and includes CSS on
+ * manager page load. Theme comes from system setting vuetools.theme.
  *
  * Events: OnManagerPageBeforeRender
  *
@@ -23,7 +24,6 @@ switch ($modx->event->name) {
         /** @var \VueTools\VueCore $vueCore */
         $vueCore = $modx->services->get('vuetools');
 
-        // Register Import Map and include CSS
         $vueCore->include();
 
         break;

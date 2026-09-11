@@ -7,17 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [1.1.3-pl] - 2026-08-28
+## [1.1.3-pl] - 2026-09-11
 
 ### Added
 - Native MODX 3 manager theme `Modx` for PrimeVue 4 (Nora base, splash `#234368`, 3px radius, 13px body)
 - Helpers `ModxManagerTheme` (`darkModeSelector: 'none'`) and `ModxTheme` (class `.p-dark`)
-- Import Map aliases `vuetools` and `vuetools/theme` (same bundle as `primevue`)
+- Centralized theming (#22): system setting `vuetools.theme` (default `aura`), `window.VueTools` injection, `@vuetools/useTheme` / `getActiveTheme()` with Aura fallback
+- Preset registry (`aura`, `modx`) inside VueTools; new themes register only here
+- Import Map aliases `vuetools` and `vuetools/theme` (same bundle as `primevue`; `vuetools/theme` is the version-aware theming signal)
 - Theme showcase: `npm run demo` / `npm run build:demo` (`src/demo/`, `vite.config.demo.js`)
+- Asset `?v=` cache-bust via filemtime for vendor/composables
 
 ### Changed
-- README and DEVELOPER_GUIDE: Modx setup, Save = `severity="success"`, token layers
-
+- README and DEVELOPER_GUIDE: prefer `getActiveTheme()`; Save = `severity="success"`; token layers
+- Backward compatible: extras that hardcode `Aura` / `ModxManagerTheme` keep working unchanged
 ## [1.1.2-pl] - 2026-06-15
 
 ### Added
