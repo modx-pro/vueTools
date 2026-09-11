@@ -82,6 +82,10 @@ app.use(PrimeVue, {
 
 В Vite `external` добавьте `@vuetools/useTheme` рядом с остальными `@vuetools/*`.
 
+### Сервис VueTools
+
+Канонический доступ: `$modx->services->get('vuetools')`. Ключ `vueTools` и `getService('vueTools', 'VueTools\Service', …)` возвращают тот же объект. Не вызывайте `new \VueTools\Service` в extras: флаги Import Map и CSS живут на экземпляре.
+
 ---
 
 ## Локализация PrimeVue

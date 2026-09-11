@@ -21,7 +21,7 @@ switch ($modx->event->name) {
             break;
         }
 
-        /** @var \VueTools\VueCore $vueCore */
+        /** @var \VueTools\Service $vueCore */
         $vueCore = $modx->services->get('vuetools');
 
         $vueCore->include();

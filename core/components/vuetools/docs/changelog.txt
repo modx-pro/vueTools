@@ -18,9 +18,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Theme showcase: `npm run demo` / `npm run build:demo` (`src/demo/`, `vite.config.demo.js`)
 - Asset `?v=` cache-bust via filemtime for vendor/composables
 
+### Fixed
+- One VueTools service under both `vuetools` and `vueTools` keys, so Import Map and CSS are not registered twice (#11)
+
 ### Changed
 - README and DEVELOPER_GUIDE: prefer `getActiveTheme()`; Save = `severity="success"`; token layers
 - Backward compatible: extras that hardcode `Aura` / `ModxManagerTheme` keep working unchanged
+
 ## [1.1.2-pl] - 2026-06-15
 
 ### Added
