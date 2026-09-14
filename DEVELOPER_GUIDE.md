@@ -639,6 +639,8 @@ VueTools регистрирует `<script type="importmap">` с ключом `v
 2. Показывает MODX-алерт с просьбой установить зависимость
 3. Ставит флаг `window.MY_COMPONENT_VUE_CORE_MISSING = true`
 
+Если компонент использует централизованную тему (`getActiveTheme()` / `@vuetools/useTheme`), одной проверки ключа `vue` недостаточно — см. раздел «Централизованная тема: требование версии» ниже.
+
 ### Реализация в PHP контроллере
 
 Создайте метод `addVueModule()` в базовом контроллере вашего компонента:
@@ -765,6 +767,21 @@ public function loadCustomCssJs()
     // );
 }
 ```
+
+### Централизованная тема: требование версии
+
+`getActiveTheme()` / `@vuetools/useTheme` появились в **VueTools 1.2.0**. На более старом ядре ключ `vue` в Import Map есть, а `@vuetools/useTheme` — нет: базовая проверка выше пройдёт, но собранный модуль затем **жёстко упадёт** на импорте `getActiveTheme` (невнятная ошибка в консоли вместо алерта).
+
+Import Map версий с поддержкой тем содержит ключ-сигнал `vuetools/theme`. Если компонент использует централизованную тему, расширьте проверку:
+
+```javascript
+// внутри registerVueCoreCheck(), вместо hasVueCore = ... imports.vue
+hasVueCore = mapContent.imports
+    && mapContent.imports.vue
+    && mapContent.imports['vuetools/theme']; // требуется VueTools >= 1.2.0 для getActiveTheme()
+```
+
+Тогда на старом ядре сработает тот же понятный алерт «обновите VueTools», а не ошибка линковки модуля. В сообщении лексикона имеет смысл указать минимальную версию (`VueTools >= 1.2.0`).
 
 ### Лексиконы
 
