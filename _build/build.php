@@ -208,6 +208,34 @@ foreach ($plugins as $name => $data) {
     out("  Added plugin: {$name}");
 }
 
+// === Add system settings ===
+out('Adding system settings...');
+
+$settingsFile = $sources['elements'] . 'settings.php';
+if (file_exists($settingsFile)) {
+    $settings = include $settingsFile;
+    if (is_array($settings)) {
+        foreach ($settings as $name => $data) {
+            /** @var \MODX\Revolution\modSystemSetting $setting */
+            $setting = $modx->newObject(\MODX\Revolution\modSystemSetting::class);
+            $setting->fromArray(array_merge([
+                'key' => PKG_NAME_LOWER . '.' . $name,
+                'namespace' => PKG_NAME_LOWER,
+            ], $data), '', true, true);
+
+            $vehicle = $builder->createVehicle($setting, [
+                xPDOTransport::UNIQUE_KEY => 'key',
+                xPDOTransport::PRESERVE_KEYS => true,
+                // Do not overwrite admin-chosen theme on package upgrade
+                xPDOTransport::UPDATE_OBJECT => false,
+                xPDOTransport::RELATED_OBJECTS => false,
+            ]);
+            $builder->putVehicle($vehicle);
+            out('  Added setting: ' . PKG_NAME_LOWER . '.' . $name);
+        }
+    }
+}
+
 // Note: OnManagerPageInit is a standard MODX event, no need to create it
 
 // === Set package attributes ===

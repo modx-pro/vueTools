@@ -13,7 +13,7 @@ use MODX\Revolution\modX;
  */
 class VueCore
 {
-    public const VERSION = '1.1.2-pl';
+    public const VERSION = '1.2.0-pl';
 
     protected modX $modx;
     protected array $namespace;
@@ -43,9 +43,10 @@ class VueCore
     }
 
     /**
-     * Register Import Map in page head
+     * Register Import Map and inject window.VueTools = { theme } in one head block.
      *
-     * Should be called once per page load, typically on OnManagerPageInit
+     * Theme value is the raw `vuetools.theme` setting; JS getActiveTheme() resolves it.
+     * Must run before any ES modules.
      *
      * @return bool True if registered, false if already registered
      */
@@ -57,39 +58,65 @@ class VueCore
 
         $vendorUrl = $this->assetsUrl . 'vendor/';
         $composablesUrl = $this->assetsUrl . 'composables/';
+        // Bust browser/HTTP cache when vendor or composable assets are rebuilt
+        // (import maps without ?v= keep stale primevue.min.js and break new named exports).
+        $vueQ = $this->assetQuery('vendor/vue.min.js');
+        $piniaQ = $this->assetQuery('vendor/pinia.min.js');
+        $primevueQ = $this->assetQuery('vendor/primevue.min.js');
+        $useApiQ = $this->assetQuery('composables/useApi.min.js');
+        $useLexiconQ = $this->assetQuery('composables/useLexicon.min.js');
+        $useModxQ = $this->assetQuery('composables/useModx.min.js');
+        $usePermissionQ = $this->assetQuery('composables/usePermission.min.js');
+        $useLocaleQ = $this->assetQuery('composables/usePrimeVueLocale.min.js');
+        $useThemeQ = $this->assetQuery('composables/useTheme.min.js');
 
         $importMap = [
             'imports' => [
-                'vue' => $vendorUrl . 'vue.min.js',
-                'pinia' => $vendorUrl . 'pinia.min.js',
-                'primevue' => $vendorUrl . 'primevue.min.js',
-                '@vuetools/useApi' => $composablesUrl . 'useApi.min.js',
-                '@vuetools/useLexicon' => $composablesUrl . 'useLexicon.min.js',
-                '@vuetools/useModx' => $composablesUrl . 'useModx.min.js',
-                '@vuetools/usePermission' => $composablesUrl . 'usePermission.min.js',
-                '@vuetools/usePrimeVueLocale' => $composablesUrl . 'usePrimeVueLocale.min.js',
+                'vue' => $vendorUrl . 'vue.min.js' . $vueQ,
+                'pinia' => $vendorUrl . 'pinia.min.js' . $piniaQ,
+                'primevue' => $vendorUrl . 'primevue.min.js' . $primevueQ,
+                // Same bundle as primevue; key also signals theming-capable builds (#22).
+                'vuetools' => $vendorUrl . 'primevue.min.js' . $primevueQ,
+                'vuetools/theme' => $vendorUrl . 'primevue.min.js' . $primevueQ,
+                '@vuetools/useApi' => $composablesUrl . 'useApi.min.js' . $useApiQ,
+                '@vuetools/useLexicon' => $composablesUrl . 'useLexicon.min.js' . $useLexiconQ,
+                '@vuetools/useModx' => $composablesUrl . 'useModx.min.js' . $useModxQ,
+                '@vuetools/usePermission' => $composablesUrl . 'usePermission.min.js' . $usePermissionQ,
+                '@vuetools/usePrimeVueLocale' => $composablesUrl . 'usePrimeVueLocale.min.js' . $useLocaleQ,
+                '@vuetools/useTheme' => $composablesUrl . 'useTheme.min.js' . $useThemeQ,
                 '@vuetools/' => $composablesUrl,
             ]
         ];
 
         $json = json_encode($importMap, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
+        $themePayload = json_encode(
+            ['theme' => (string) $this->modx->getOption('vuetools.theme', null, 'aura')],
+            JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE
+        );
 
-        // Insert Import Map at the BEGINNING of controller head html (must be before any ES modules)
-        $importMapHtml = '<script type="importmap">' . "\n" . $json . "\n" . '</script>';
+        // One insert: import map first, then client theme config (classic script).
+        $html = '<script type="importmap">' . "\n" . $json . "\n" . '</script>'
+            . '<script>window.VueTools=Object.assign({},window.VueTools||{},' . $themePayload . ');</script>';
 
-        // In manager context, use controller's head array (renders before sjscripts)
-        if (isset($this->modx->controller) && isset($this->modx->controller->head['html'])) {
-            array_unshift($this->modx->controller->head['html'], $importMapHtml);
-        } else {
-            // Fallback for non-manager context
-            array_unshift($this->modx->sjscripts, $importMapHtml);
-        }
+        $this->unshiftHead($html);
 
         $this->importMapRegistered = true;
 
         $this->modx->log(modX::LOG_LEVEL_DEBUG, '[VueTools] Import Map registered');
 
         return true;
+    }
+
+    /**
+     * Prepend HTML to manager controller head, or sjscripts as fallback.
+     */
+    protected function unshiftHead(string $html): void
+    {
+        if (isset($this->modx->controller) && isset($this->modx->controller->head['html'])) {
+            array_unshift($this->modx->controller->head['html'], $html);
+        } else {
+            array_unshift($this->modx->sjscripts, $html);
+        }
     }
 
     /**
@@ -108,7 +135,7 @@ class VueCore
         $vendorUrl = $this->assetsUrl . 'vendor/';
 
         // VueTools styles (PrimeVue theme + PrimeIcons)
-        $this->modx->regClientCSS($vendorUrl . 'vuetools.css');
+        $this->modx->regClientCSS($vendorUrl . 'vuetools.css' . $this->assetQuery('vendor/vuetools.css'));
 
         $this->stylesIncluded = true;
 
@@ -116,9 +143,44 @@ class VueCore
     }
 
     /**
-     * Include all Vue core resources (Import Map + CSS)
+     * Cache-bust query for a VueTools asset under assets/components/vuetools/.
      *
-     * Convenience method to include everything at once
+     * Uses filemtime when the file is readable, otherwise package VERSION.
+     */
+    protected function assetQuery(string $relativePath): string
+    {
+        $relativePath = ltrim(str_replace('\\', '/', $relativePath), '/');
+        $candidates = [];
+
+        $assetsPath = (string) $this->modx->getOption('assets_path', null, '');
+        if ($assetsPath !== '') {
+            $candidates[] = rtrim($assetsPath, '/') . '/components/vuetools/' . $relativePath;
+        }
+        if (defined('MODX_ASSETS_PATH')) {
+            $candidates[] = rtrim(MODX_ASSETS_PATH, '/') . '/components/vuetools/' . $relativePath;
+        }
+
+        foreach ($candidates as $path) {
+            if (is_file($path)) {
+                return '?v=' . (string) filemtime($path);
+            }
+        }
+
+        return '?v=' . self::VERSION;
+    }
+
+    /**
+     * Register ExtJS combo for system setting vuetools.theme.
+     */
+    public function includeManagerCombos(): void
+    {
+        $this->modx->regClientStartupScript(
+            $this->assetsUrl . 'js/mgr/combo.theme.js' . $this->assetQuery('js/mgr/combo.theme.js')
+        );
+    }
+
+    /**
+     * Include all Vue core resources (Import Map + client theme + CSS + mgr combos)
      *
      * @return void
      */
@@ -126,6 +188,7 @@ class VueCore
     {
         $this->registerImportMap();
         $this->includeStyles();
+        $this->includeManagerCombos();
     }
 
     /**

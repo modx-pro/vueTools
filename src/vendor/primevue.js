@@ -9,6 +9,10 @@
 export { default as PrimeVue } from 'primevue/config'
 export { default as Aura } from '@primeuix/themes/aura'
 
+// Native MODX 3 manager theme, also served under the vuetools/theme specifier
+export { Modx, ModxManagerTheme, ModxTheme } from '../theme/modx/index.js'
+export { definePreset } from '@primeuix/themes'
+
 // Services
 export { default as ConfirmationService } from 'primevue/confirmationservice'
 export { default as ToastService } from 'primevue/toastservice'
@@ -54,6 +58,7 @@ export { default as InputText } from 'primevue/inputtext'
 export { default as InputNumber } from 'primevue/inputnumber'
 export { default as InputMask } from 'primevue/inputmask'
 export { default as InputOtp } from 'primevue/inputotp'
+export { default as InputChips } from 'primevue/inputchips'
 export { default as Textarea } from 'primevue/textarea'
 export { default as Password } from 'primevue/password'
 export { default as InputGroup } from 'primevue/inputgroup'

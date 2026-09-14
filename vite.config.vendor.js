@@ -76,9 +76,12 @@ const piniaConfig = {
     rollupOptions: {
       external: ['vue', 'vue/dist/vue.esm-browser.prod.js'],
       output: {
+        // Bare 'vue' so the browser Import Map applies the same ?v= URL as
+        // app code. Relative ./vue.min.js would be a second module instance
+        // (no query) and break provide/inject / refs with PrimeVue components.
         paths: {
-          'vue': './vue.min.js',
-          'vue/dist/vue.esm-browser.prod.js': './vue.min.js'
+          'vue': 'vue',
+          'vue/dist/vue.esm-browser.prod.js': 'vue'
         }
       }
     },
@@ -112,9 +115,12 @@ const primevueConfig = {
     rollupOptions: {
       external: ['vue', 'vue/dist/vue.esm-browser.prod.js'],
       output: {
+        // Bare 'vue' so the browser Import Map applies the same ?v= URL as
+        // app code. Relative ./vue.min.js would be a second module instance
+        // (no query) and break provide/inject / refs with PrimeVue components.
         paths: {
-          'vue': './vue.min.js',
-          'vue/dist/vue.esm-browser.prod.js': './vue.min.js'
+          'vue': 'vue',
+          'vue/dist/vue.esm-browser.prod.js': 'vue'
         }
       }
     },
