@@ -1,0 +1,27 @@
+name: Docs
+description: Документация, гайд, пример для разработчика Extra
+title: ""
+labels: ["documentation"]
+body:
+  - type: textarea
+    id: task
+    attributes:
+      label: Задача
+      description: Какой документ или раздел нужно добавить или поправить.
+    validations:
+      required: true
+  - type: textarea
+    id: audience
+    attributes:
+      label: Для кого
+      description: Автор Extra, maintainer VueTools, администратор MODX.
+      placeholder: Разработчик MODX 3 Extra
+  - type: textarea
+    id: ac
+    attributes:
+      label: Acceptance Criteria
+      value: |
+        - [ ]
+        - [ ] Текст совпадает с кодом, не с устаревшим гайдом
+    validations:
+      required: true
