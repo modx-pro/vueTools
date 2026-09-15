@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Руководство разработчика
+    url: https://github.com/modx-pro/vueTools/blob/master/DEVELOPER_GUIDE.md
+    about: Как подключить VueTools в Extra
+  - name: Public API
+    url: https://github.com/modx-pro/vueTools/blob/master/docs/PUBLIC_API.md
+    about: Что считается стабильным API

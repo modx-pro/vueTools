@@ -1,0 +1,70 @@
+name: Feature
+description: Новая возможность, API или изменение платформы
+title: ""
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Если добавляете public export или specifier, обновите `docs/PUBLIC_API.md` и `docs/public-api.json`.
+  - type: textarea
+    id: task
+    attributes:
+      label: Задача
+      description: Что нужно сделать.
+    validations:
+      required: true
+  - type: textarea
+    id: goal
+    attributes:
+      label: Цель
+      description: Зачем это нужно Extra, а не как внутренний helper.
+  - type: textarea
+    id: api
+    attributes:
+      label: Предлагаемый API
+      description: Пример импорта и вызова, если уже понятна форма.
+      render: javascript
+      placeholder: |
+        import { useEventBus } from '@vuetools/useEventBus'
+
+        const bus = useEventBus('products')
+        bus.emit('updated', product)
+  - type: textarea
+    id: requirements
+    attributes:
+      label: Требования
+      placeholder: |
+        - ...
+        - ...
+  - type: textarea
+    id: ac
+    attributes:
+      label: Acceptance Criteria
+      value: |
+        - [ ]
+        - [ ]
+        - [ ] Документация обновлена
+        - [ ] Public API обновлён, если меняется контракт
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Область
+      options:
+        - architecture
+        - ui
+        - developer-experience
+        - integration
+        - documentation
+        - другое
+  - type: dropdown
+    id: api-impact
+    attributes:
+      label: Влияние на public API
+      options:
+        - Не меняет
+        - Добавляет (minor)
+        - Ломает существующий (major)
+      default: 0

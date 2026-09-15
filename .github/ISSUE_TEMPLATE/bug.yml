@@ -1,0 +1,73 @@
+name: Bug
+description: Что-то сломалось в VueTools или в Extra, которая его использует
+title: ""
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Сначала проверьте [открытые issues](https://github.com/modx-pro/vueTools/issues).
+  - type: textarea
+    id: task
+    attributes:
+      label: Что происходит
+      description: Коротко, что ломается и где это видно.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Ожидание
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Факт
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Как повторить
+      placeholder: |
+        1.
+        2.
+        3.
+    validations:
+      required: true
+  - type: input
+    id: vuetools
+    attributes:
+      label: Версия VueTools
+      placeholder: 1.2.0-pl
+    validations:
+      required: true
+  - type: input
+    id: modx
+    attributes:
+      label: Версия MODX
+      placeholder: 3.x
+    validations:
+      required: true
+  - type: input
+    id: browser
+    attributes:
+      label: Браузер
+      placeholder: Chrome 140, Firefox 131
+  - type: dropdown
+    id: area
+    attributes:
+      label: Область
+      options:
+        - Import Map / vendor
+        - composable
+        - тема / PrimeVue
+        - PHP-сервис
+        - документация
+        - другое
+  - type: textarea
+    id: extra
+    attributes:
+      label: Extra
+      description: Если баг в extra на VueTools, укажите пакет и версию.
