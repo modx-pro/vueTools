@@ -3,7 +3,9 @@
   "package": {
     "name": "vuetools",
     "modxPackage": "VueTools",
-    "npmName": "vuetools"
+    "npmName": "vuetools",
+    "npmSource": "package.json",
+    "modxSource": "_build/config.inc.php"
   },
   "canonicalDocs": [
     "docs/PUBLIC_API.md",
@@ -281,17 +283,22 @@
   },
   "browser": {
     "global": "VueTools",
-    "keys": ["theme"]
+    "keys": ["theme"],
+    "source": "core/components/vuetools/src/VueCore.php"
   },
   "settings": {
     "vuetools.theme": {
       "default": "aura",
-      "values": ["aura", "modx"]
+      "values": ["aura", "modx"],
+      "source": "_build/elements/settings.php",
+      "valuesSource": "assets/components/vuetools/js/mgr/combo.theme.js"
     }
   },
   "css": {
     "isolationClass": "vueApp",
-    "darkClass": "p-dark"
+    "isolationSource": "vite.config.vendor.js",
+    "darkClass": "p-dark",
+    "darkSource": "src/theme/modx/index.js"
   },
   "internal": {
     "paths": [

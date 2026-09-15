@@ -25,14 +25,40 @@ function read(relPath) {
   return readFileSync(abs, 'utf8')
 }
 
-function loadManifest() {
-  const raw = read('docs/public-api.json')
+function readJson(relPath) {
+  const raw = read(relPath)
   if (!raw) return null
   try {
     return JSON.parse(raw)
   } catch (e) {
-    fail(`Invalid JSON in docs/public-api.json: ${e.message}`)
+    fail(`Invalid JSON in ${relPath}: ${e.message}`)
     return null
+  }
+}
+
+function loadManifest() {
+  const manifest = readJson('docs/public-api.json')
+  if (!manifest) return null
+  return manifest
+}
+
+function escapeRegExp(value) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+}
+
+function compareExactSet(label, actualValues, expectedValues) {
+  const actual = new Set(actualValues)
+  const expected = new Set(expectedValues)
+
+  for (const value of expected) {
+    if (!actual.has(value)) {
+      fail(`${label}: missing '${value}'`)
+    }
+  }
+  for (const value of actual) {
+    if (!expected.has(value)) {
+      fail(`${label}: unexpected '${value}' (update manifest or source)`)
+    }
   }
 }
 
@@ -44,6 +70,47 @@ function stripLineComments(text) {
       return idx === -1 ? line : line.slice(0, idx)
     })
     .join('\n')
+}
+
+function stripComments(text) {
+  return stripLineComments(text).replace(/\/\*[\s\S]*?\*\//g, ' ')
+}
+
+function hasPhpArrayKey(source, key) {
+  return new RegExp(`['"]${escapeRegExp(key)}['"]\\s*=>`).test(source)
+}
+
+function isIdentifierDeclared(code, name) {
+  const escaped = escapeRegExp(name)
+  return (
+    new RegExp(`\\bfunction\\s+${escaped}\\s*\\(`).test(code) ||
+    new RegExp(`\\b(?:const|let|var)\\s+${escaped}\\b`).test(code) ||
+    new RegExp(`(?:^|[,{\\n])\\s*${escaped}\\s*(?=[:,}\\n])`, 'm').test(code)
+  )
+}
+
+function phpReferencesClass(source, fqcn) {
+  const shortName = fqcn.split('\\').at(-1)
+  return source.includes(`\\${fqcn}`) || source.includes(`${shortName}::class`)
+}
+
+function addNamedExportFromClause(named, cleaned) {
+  const defaultAs = cleaned.match(/^default\s+as\s+([A-Za-z_$][\w$]*)$/)
+  if (defaultAs) {
+    named.add(defaultAs[1])
+    return
+  }
+
+  const asMatch = cleaned.match(/^[A-Za-z_$][\w$]*\s+as\s+([A-Za-z_$][\w$]*)$/)
+  if (asMatch) {
+    named.add(asMatch[1])
+    return
+  }
+
+  const plain = cleaned.match(/^([A-Za-z_$][\w$]*)$/)
+  if (plain) {
+    named.add(plain[1])
+  }
 }
 
 /**
@@ -61,30 +128,13 @@ function parseExports(source, relPath) {
   let hasDefault = false
   let defaultName = null
 
-  // Ignore full-line // comments so commented-out exports are not counted
   const code = stripLineComments(source)
 
   for (const match of code.matchAll(/export\s*\{([^}]+)\}(?:\s*from\s*['"][^'"]+['"])?/g)) {
-    const parts = match[1].split(',')
-    for (const part of parts) {
+    for (const part of match[1].split(',')) {
       const cleaned = part.replace(/\/\*[\s\S]*?\*\//g, '').trim()
-      if (!cleaned) continue
-
-      const defaultAs = cleaned.match(/^default\s+as\s+([A-Za-z_$][\w$]*)$/)
-      if (defaultAs) {
-        named.add(defaultAs[1])
-        continue
-      }
-
-      const asMatch = cleaned.match(/^[A-Za-z_$][\w$]*\s+as\s+([A-Za-z_$][\w$]*)$/)
-      if (asMatch) {
-        named.add(asMatch[1])
-        continue
-      }
-
-      const plain = cleaned.match(/^([A-Za-z_$][\w$]*)$/)
-      if (plain) {
-        named.add(plain[1])
+      if (cleaned) {
+        addNamedExportFromClause(named, cleaned)
       }
     }
   }
@@ -120,6 +170,29 @@ function parseExports(source, relPath) {
   return { named, hasStar, hasDefault, defaultName }
 }
 
+function checkPackage(manifest) {
+  const packageApi = manifest.package
+  const npmPackage = readJson(packageApi.npmSource)
+  if (
+    npmPackage &&
+    (npmPackage.name !== packageApi.npmName || packageApi.name !== packageApi.npmName)
+  ) {
+    fail(
+      `Package name mismatch: manifest=${packageApi.npmName}, package.json=${npmPackage.name}`
+    )
+  }
+
+  const modxConfig = read(packageApi.modxSource)
+  if (
+    modxConfig &&
+    !new RegExp(`['"]name['"]\\s*=>\\s*['"]${escapeRegExp(packageApi.modxPackage)}['"]`).test(
+      modxConfig
+    )
+  ) {
+    fail(`MODX package name '${packageApi.modxPackage}' missing in ${packageApi.modxSource}`)
+  }
+}
+
 function checkCanonicalDocs(manifest) {
   for (const rel of manifest.canonicalDocs || []) {
     if (!existsSync(join(root, rel))) {
@@ -136,38 +209,76 @@ function checkCanonicalDocs(manifest) {
   }
 }
 
+function getImportMapExpression(importsBlock, specifier) {
+  const pattern = new RegExp(
+    `['"]${escapeRegExp(specifier)}['"]\\s*=>\\s*([^,\\n]+)`,
+    'm'
+  )
+  return importsBlock.match(pattern)?.[1]?.replace(/\s+/g, ' ').trim() || null
+}
+
+function checkImportMapSpecifiersInPhp(php, manifest, publicSpecifiers, internalSpecifiers) {
+  for (const key of publicSpecifiers) {
+    if (!php.includes(`'${key}'`)) {
+      fail(`Import Map missing public specifier ${key} in ${manifest.importMap.source}`)
+    }
+  }
+  for (const key of internalSpecifiers) {
+    if (!php.includes(`'${key}'`)) {
+      fail(`Import Map missing registered internal specifier ${key}`)
+    }
+  }
+}
+
+function checkModuleImportMapAliases(importsBlock, manifest, publicSpecifiers) {
+  for (const mod of Object.values(manifest.modules || {})) {
+    if (!publicSpecifiers.includes(mod.specifier)) {
+      fail(`Module specifier '${mod.specifier}' is not public in the Import Map`)
+    }
+
+    const sourceExpression = getImportMapExpression(importsBlock, mod.specifier)
+    for (const alias of mod.aliases || []) {
+      if (!publicSpecifiers.includes(alias)) {
+        fail(`Module alias '${alias}' is not public in the Import Map`)
+        continue
+      }
+      const aliasExpression = getImportMapExpression(importsBlock, alias)
+      if (sourceExpression && aliasExpression && sourceExpression !== aliasExpression) {
+        fail(`Module alias '${alias}' does not resolve to the same asset as '${mod.specifier}'`)
+      }
+    }
+  }
+}
+
 function checkImportMap(manifest) {
   const php = read(manifest.importMap.source)
   if (!php) return
 
   const publicSpecifiers = manifest.importMap.publicSpecifiers
   const internalSpecifiers = manifest.importMap.internalSpecifiers || []
-
-  for (const key of publicSpecifiers) {
-    if (!php.includes(`'${key}'`)) {
-      fail(`Import Map missing public specifier ${key} in ${manifest.importMap.source}`)
-    }
-  }
-
-  for (const key of internalSpecifiers) {
-    if (!php.includes(`'${key}'`)) {
-      fail(`Import Map missing registered internal specifier ${key}`)
-    }
-  }
-
   const importsBlock = php.match(/'imports'\s*=>\s*\[([\s\S]*?)\]\s*\}/)
+
   if (importsBlock) {
-    const found = [...importsBlock[1].matchAll(/'([^']+)'\s*=>/g)].map((x) => x[1])
-    const allowed = new Set([...publicSpecifiers, ...internalSpecifiers])
-    for (const key of found) {
-      if (!allowed.has(key)) {
-        fail(`Import Map has undeclared specifier '${key}' (add to public or internal in manifest)`)
-      }
-    }
-    for (const key of publicSpecifiers) {
-      if (!found.includes(key)) {
-        fail(`Manifest public specifier '${key}' not found as Import Map key`)
-      }
+    const found = [...importsBlock[1].matchAll(/'([^']+)'\s*=>/g)].map((match) => match[1])
+    compareExactSet(
+      'Import Map specifiers',
+      found,
+      [...publicSpecifiers, ...internalSpecifiers]
+    )
+    checkModuleImportMapAliases(importsBlock[1], manifest, publicSpecifiers)
+    return
+  }
+
+  checkImportMapSpecifiersInPhp(php, manifest, publicSpecifiers, internalSpecifiers)
+}
+
+function checkReturnKeys(id, mod, source) {
+  if (!mod.returnKeys) return
+
+  const code = stripComments(source)
+  for (const key of mod.returnKeys) {
+    if (!isIdentifierDeclared(code, key)) {
+      fail(`${id}: return key '${key}' is not declared in ${mod.source}`)
     }
   }
 }
@@ -188,36 +299,31 @@ function checkModule(id, mod) {
     return
   }
 
-  if (mod.mode === 'exact-named') {
-    const expected = new Set(mod.namedExports || [])
-    for (const name of expected) {
-      if (!parsed.named.has(name)) {
-        fail(`${id}: missing named export '${name}' in ${mod.source}`)
-      }
-    }
-    for (const name of parsed.named) {
-      if (!expected.has(name)) {
-        fail(`${id}: unexpected named export '${name}' in ${mod.source} (update manifest or remove export)`)
-      }
-    }
-
-    const wantDefault = Boolean(mod.defaultExport)
-    if (wantDefault !== parsed.hasDefault) {
-      fail(
-        `${id}: default export mismatch in ${mod.source} (manifest=${wantDefault}, file=${parsed.hasDefault})`
-      )
-    }
-    if (
-      wantDefault &&
-      typeof mod.defaultExport === 'string' &&
-      parsed.defaultName &&
-      parsed.defaultName !== mod.defaultExport
-    ) {
-      fail(
-        `${id}: default export name is '${parsed.defaultName}', manifest expects '${mod.defaultExport}'`
-      )
-    }
+  if (mod.mode !== 'exact-named') {
+    fail(`${id}: unsupported module mode '${mod.mode}'`)
+    return
   }
+
+  compareExactSet(`${id} named exports`, [...parsed.named], mod.namedExports || [])
+
+  const wantDefault = Boolean(mod.defaultExport)
+  if (wantDefault !== parsed.hasDefault) {
+    fail(
+      `${id}: default export mismatch in ${mod.source} (manifest=${wantDefault}, file=${parsed.hasDefault})`
+    )
+  }
+  if (
+    wantDefault &&
+    typeof mod.defaultExport === 'string' &&
+    parsed.defaultName &&
+    parsed.defaultName !== mod.defaultExport
+  ) {
+    fail(
+      `${id}: default export name is '${parsed.defaultName}', manifest expects '${mod.defaultExport}'`
+    )
+  }
+
+  checkReturnKeys(id, mod, source)
 }
 
 function checkPhp(manifest) {
@@ -225,11 +331,10 @@ function checkPhp(manifest) {
   const core = read(php.coreSource)
   if (!core) return
 
-  for (const method of php.publicMethods) {
-    if (!new RegExp(`public function ${method}\\s*\\(`).test(core)) {
-      fail(`PHP public method missing: ${method}() in ${php.coreSource}`)
-    }
-  }
+  const actualMethods = [...core.matchAll(/public function\s+([A-Za-z_][A-Za-z0-9_]*)\s*\(/g)]
+    .map((match) => match[1])
+    .filter((method) => method !== '__construct')
+  compareExactSet('PHP public methods', actualMethods, php.publicMethods)
 
   for (const constant of php.publicConstants || []) {
     if (!new RegExp(`public const ${constant}\\b`).test(core)) {
@@ -248,24 +353,105 @@ function checkPhp(manifest) {
       fail(`Bootstrap missing service alias '${alias}'`)
     }
   }
+
+  if (!phpReferencesClass(bootstrap, php.serviceClass)) {
+    fail(`PHP service class '${php.serviceClass}' missing in ${php.bootstrap}`)
+  }
+
+  const coreClass = php.coreClass.split('\\').at(-1)
+  if (!new RegExp(`class\\s+${escapeRegExp(coreClass)}\\b`).test(core)) {
+    fail(`PHP core class '${php.coreClass}' missing in ${php.coreSource}`)
+  }
 }
 
-function checkBrowserCssSettings(manifest) {
-  const php = read(manifest.importMap.source)
-  if (!php) return
-
-  if (!php.includes('window.VueTools')) {
-    fail('VueCore.php must inject window.VueTools')
+function checkBrowser(manifest, browserSource) {
+  if (!browserSource.includes(`window.${manifest.browser.global}`)) {
+    fail(`${manifest.browser.source} must inject window.${manifest.browser.global}`)
   }
-  if (manifest.browser.keys.includes('theme') && !php.includes('theme')) {
-    fail(`Browser global key 'theme' not referenced in VueCore.php`)
+  for (const key of manifest.browser.keys) {
+    if (!hasPhpArrayKey(browserSource, key)) {
+      fail(`Browser global key '${key}' not found in ${manifest.browser.source}`)
+    }
   }
 
+  const payload = browserSource.match(/\$themePayload\s*=\s*json_encode\(\s*\[([\s\S]*?)\]\s*,/)
+  if (payload) {
+    const actualKeys = [...payload[1].matchAll(/['"]([^'"]+)['"]\s*=>/g)].map(
+      (match) => match[1]
+    )
+    compareExactSet('Browser global keys', actualKeys, manifest.browser.keys)
+  } else {
+    fail(`Browser global payload not found in ${manifest.browser.source}`)
+  }
+}
+
+function checkSettings(manifest) {
+  for (const [fullKey, setting] of Object.entries(manifest.settings || {})) {
+    const shortKey = fullKey.split('.').at(-1)
+    const settingSource = read(setting.source)
+    if (settingSource) {
+      if (!hasPhpArrayKey(settingSource, shortKey)) {
+        fail(`Setting '${fullKey}' missing in ${setting.source}`)
+      }
+      if (
+        !new RegExp(`['"]value['"]\\s*=>\\s*['"]${escapeRegExp(setting.default)}['"]`).test(
+          settingSource
+        )
+      ) {
+        fail(`Setting '${fullKey}' default '${setting.default}' missing in ${setting.source}`)
+      }
+    }
+
+    const valuesSource = read(setting.valuesSource)
+    if (valuesSource) {
+      const data = valuesSource.match(/\bdata\s*:\s*(\[[^\n]+\])/)
+      const actualValues = [
+        ...(data?.[1] || '').matchAll(
+          /\[\s*['"][^'"]+['"]\s*,\s*['"]([^'"]+)['"]\s*\]/g
+        )
+      ].map((match) => match[1])
+      if (!data) {
+        fail(`Setting values data not found in ${setting.valuesSource}`)
+      }
+      compareExactSet(`Setting '${fullKey}' values`, actualValues, setting.values)
+    }
+  }
+}
+
+function checkCss(manifest) {
   const guide = read('DEVELOPER_GUIDE.md') || ''
   const iso = manifest.css.isolationClass
   if (!guide.includes(`.${iso}`) && !guide.includes(`class="${iso}"`)) {
     fail(`DEVELOPER_GUIDE.md must document .${iso}`)
   }
+
+  const isolationSource = read(manifest.css.isolationSource)
+  if (isolationSource && !isolationSource.includes(`.${iso}`)) {
+    fail(`CSS isolation class '.${iso}' missing in ${manifest.css.isolationSource}`)
+  }
+
+  const darkSource = read(manifest.css.darkSource)
+  if (darkSource && !darkSource.includes(`.${manifest.css.darkClass}`)) {
+    fail(`CSS dark class '.${manifest.css.darkClass}' missing in ${manifest.css.darkSource}`)
+  }
+}
+
+function checkInternalPaths(manifest) {
+  for (const relPath of manifest.internal?.paths || []) {
+    if (!existsSync(join(root, relPath))) {
+      fail(`Declared internal path missing: ${relPath}`)
+    }
+  }
+}
+
+function checkBrowserCssSettings(manifest) {
+  const browserSource = read(manifest.browser.source)
+  if (!browserSource) return
+
+  checkBrowser(manifest, browserSource)
+  checkSettings(manifest)
+  checkCss(manifest)
+  checkInternalPaths(manifest)
 }
 
 function main() {
@@ -275,6 +461,11 @@ function main() {
     process.exit(1)
   }
 
+  if (!Number.isInteger(manifest.version) || manifest.version < 1) {
+    fail('Manifest version must be a positive integer')
+  }
+
+  checkPackage(manifest)
   checkCanonicalDocs(manifest)
   checkImportMap(manifest)
 

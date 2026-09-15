@@ -155,12 +155,44 @@ Extra с `{ theme: { preset: Aura } }` или `ModxManagerTheme` продолж�
 
 ---
 
+## Compatibility API
+
+Issue [#39](https://github.com/modx-pro/vueTools/issues/39) добавит `VueTools.version`,
+`VueTools.hasFeature()` и `VueTools.checkCompatibility()`. До его реализации эти
+свойства не входят в public API.
+
+Для Compatibility API действуют те же правила:
+
+1. Новый член `window.VueTools` добавляется в minor-релизе и в `public-api.json`.
+2. `hasFeature(name)` предпочтительнее сравнения версий, когда Extra проверяет
+   отдельную возможность.
+3. Неизвестная feature возвращает `false`, а не бросает исключение.
+4. `checkCompatibility()` сообщает требуемую и установленную версии.
+5. Удаление feature или смена результата для уже известного имени требует major.
+
+До появления #39 Extra проверяет доступность Import Map specifier. Например,
+`vuetools/theme` означает поддержку централизованной темы с VueTools 1.2.0.
+
+---
+
 ## Deprecation policy
 
 1. Объявить в `docs/PUBLIC_API.md` и `changelog.txt` (раздел Deprecated).
 2. Сохранить deprecated API минимум один **minor**-релиз.
 3. Удалить только в следующем **major**.
 4. Канал: changelog + этот документ. Package Manager `readme.txt` и README ссылаются сюда.
+
+Если вызов можно перехватить, VueTools один раз за загрузку страницы пишет warning
+в debug-режиме:
+
+```text
+[VueTools][deprecated] <api> deprecated since <version>. Use <replacement>. Removal in <major>.
+```
+
+Warning должен назвать API, версию deprecation, замену и major для удаления. Он
+не содержит пользовательские данные и не выводится при выключенном debug.
+Для exports и Import Map specifiers, которые нельзя перехватить, changelog и этот
+документ служат единственным предупреждением.
 
 Алиас `vueTools` и хардкод Aura/`ModxManagerTheme` не в deprecation. Убрать их можно только отдельным major, заранее объявив это в changelog.
 

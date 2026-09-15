@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Developer docs match composable return values (`usePermission`: `can`/`canAny`/`canAll`; `useModx` computed fields)
 - Package require name in README and Package Manager readme is `vuetools`
+- Public API checker also validates package names, alias targets, return keys, PHP methods, settings, CSS hooks, and internal paths
 
 ## [1.2.0-pl] - 2026-09-14
 
