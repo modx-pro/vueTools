@@ -18,8 +18,8 @@ export const icon = {
 }
 
 export const content = {
-  padding: '0.625rem 0.75rem',
-  gap: '0.5rem'
+  padding: '15px',
+  gap: '0.75rem'
 }
 
 export const text = {
@@ -28,12 +28,12 @@ export const text = {
 
 export const summary = {
   fontWeight: '700',
-  fontSize: '0.8125rem'
+  fontSize: '0.875rem'
 }
 
 export const detail = {
   fontWeight: '400',
-  fontSize: '0.75rem'
+  fontSize: '0.875rem'
 }
 
 export const closeButton = {

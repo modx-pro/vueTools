@@ -89,8 +89,9 @@ const splitItems = [
       </div>
 
       <p class="demo-hint">
-        The manager Save action is green: use <code>severity="success"</code>.
-        Toolbar buttons are the white bordered <code>severity="secondary"</code>.
+        The manager action button (<code>.primary-button</code>, Save, Create) is green
+        <code>#6CB24A</code>. A button with no severity uses that fill. Toolbar chrome is
+        <code>severity="secondary"</code>. Navy <code>#234368</code> is tabs, links and selection.
       </p>
     </div>
   </section>

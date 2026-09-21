@@ -50,7 +50,7 @@ export const dark = {
     filledFocusBackground: '{surface.950}',
     borderColor: '{surface.700}',
     hoverBorderColor: '{surface.600}',
-    focusBorderColor: '{primary.color}',
+    focusBorderColor: '{neutral.500}',
     invalidBorderColor: '{red.400}',
     color: '{surface.50}',
     disabledColor: '{surface.500}',

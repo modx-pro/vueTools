@@ -3,10 +3,11 @@
  *
  * SelectButton renders a group of ToggleButtons. Nora checked state uses
  * `{highlight.*}` (navy tint for tree/list selection). Segmented controls in
- * the manager should read like secondary buttons with a success checked fill —
- * same language as Checkbox and severity="success" CTAs.
+ * the manager should read like a success CTA: green checked fill, same as
+ * `.primary-button`. Checkbox stays the gray 18px glyph.
  *
- * Height pinned to `{modx.control.height}` (36px) to match toolbar buttons.
+ * Height pinned to `{modx.field.height}` (32px) so SelectButton segments
+ * line up with InputText, not with the 36px toolbar button.
  */
 
 export const root = {
@@ -82,13 +83,13 @@ export const colorScheme = {
  */
 export const css = ({ dt }) => `
 .p-togglebutton:not(.p-togglebutton-sm):not(.p-togglebutton-lg) {
-    font-size: ${dt('modx.font.size.lg')};
-    min-height: ${dt('modx.control.height')};
+    font-size: ${dt('modx.font.size.base')};
+    min-height: ${dt('modx.field.height')};
     box-sizing: border-box;
 }
 
 .p-selectbutton .p-togglebutton:not(.p-togglebutton-sm):not(.p-togglebutton-lg) {
-    min-height: ${dt('modx.control.height')};
+    min-height: ${dt('modx.field.height')};
 }
 `
 

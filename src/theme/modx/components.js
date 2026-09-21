@@ -28,8 +28,10 @@ import message from './components/message.js'
 import multiselect from './components/multiselect.js'
 import paginator from './components/paginator.js'
 import panel from './components/panel.js'
+import progressbar from './components/progressbar.js'
 import radiobutton from './components/radiobutton.js'
 import select from './components/select.js'
+import slider from './components/slider.js'
 import tabs from './components/tabs.js'
 import tag from './components/tag.js'
 import toast from './components/toast.js'
@@ -61,8 +63,10 @@ export const components = {
   multiselect,
   paginator,
   panel,
+  progressbar,
   radiobutton,
   select,
+  slider,
   tabs,
   tag,
   toast,

@@ -6,19 +6,25 @@
  */
 
 export const root = {
-  maxWidth: '18rem',
+  maxWidth: '25rem',
   gutter: '0.25rem',
-  shadow: '{overlay.popover.shadow}',
-  padding: '0.3125rem 0.5rem',
+  shadow: 'none',
+  padding: '5px',
   borderRadius: '{border.radius.sm}'
 }
 
 const surface = {
   root: {
-    background: '{neutral.700}',
-    color: '{neutral.100}'
+    background: '#575757',
+    color: '#F0F0F0'
   }
 }
+
+export const css = () => `
+.p-tooltip {
+    font-size: 0.75rem;
+}
+`
 
 export const colorScheme = {
   light: surface,
@@ -27,5 +33,6 @@ export const colorScheme = {
 
 export default {
   root,
-  colorScheme
+  colorScheme,
+  css
 }

@@ -6,13 +6,15 @@
  *
  *   .x-tab-panel-header ul.x-tab-strip { background: transparent }
  *     → parent #modx-container #F1F1F1 shows through
- *   li                 { color: #53595f; padding: 0 12px; line-height: 2.2 }
+ *   li                 { padding: 0 12px; line-height: 2.2 }
  *   li:hover           { background: #e4e4e4; color: #000 }
  *   li.x-tab-strip-active { background: #fff }
- *   .x-tab-strip-text (active) → splash / primary #234368
+ *   visible label      { color: #234368 }  the strip text is an <a>, so both
+ *                         idle and active labels render as the splash link color.
+ *                         The li color (#53595F / #09121C) does not show.
  *
- * Top-level Ext tabs have no colored accent bar — active state is white fill
- * + splash label only. Nested Ext / ms3-window strips with box-shadow are a
+ * Top-level Ext tabs have no colored accent bar. Active state is a white fill;
+ * the label stays splash, same as the idle tab. Nested Ext / ms3-window strips with box-shadow are a
  * different pattern and must not leak into page-level Vue Tabs.
  *
  * Nested Ext panels use #FBFBFB for the strip; page-level Vue tabs must use
@@ -82,11 +84,9 @@ export const colorScheme = {
       background: '#F1F1F1'
     },
     tab: {
-      // Ext inactive label #53595F
-      color: '#53595F',
+      color: '{primary.color}',
       hoverBackground: '{surface.300}',
-      hoverColor: '{surface.950}',
-      // White active tab on #F1F1F1 + splash label (matches Ext .x-tab-strip-text)
+      hoverColor: '#000000',
       activeBackground: '{content.background}',
       activeColor: '{primary.color}'
     }

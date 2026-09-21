@@ -153,11 +153,11 @@ app.use(PrimeVue, { theme: ModxTheme, locale: getPrimeVueLocale() })
 
 | Действие | Severity | Визуал |
 |----------|----------|--------|
-| Save / Create | `success` | зелёный `$green` `#6CB24A` |
-| Toolbar / Cancel | `secondary` | белый + 1px border |
-| Primary focus / selection | default (без severity) | splash navy `#234368` |
+| Save / Create / кнопка без severity | `success` или default | зелёный `$green` `#6CB24A` (`.primary-button`) |
+| Toolbar / Cancel | `secondary` | белый + кольцо `#E4E4E4` |
+| Ссылки, вкладки, выделение | `primary` токен, не заливка кнопки | splash navy `#234368` |
 
-`semantic.primary` остаётся navy (focus ring, selected, tabs, checkbox). Зелёный Save только через `severity="success"`.
+`semantic.primary` остаётся navy (вкладки, ссылки, selected). Заливка кнопки без severity и `severity="success"` обе зелёные, как `.primary-button` в менеджере.
 
 ### Три яруса токенов
 
