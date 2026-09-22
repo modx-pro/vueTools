@@ -59,7 +59,7 @@ VueTools регистрирует Import Map в `<head>` страницы мен
 ### Как это работает
 
 1. Плагин `VueCoreManager` срабатывает на `OnManagerPageBeforeRender`
-2. В один блок в `<head>`: Import Map и `window.VueTools = { theme }` из `vuetools.theme` (default `aura`)
+2. В один блок в `<head>`: Import Map, `compat.min.js` и `window.VueTools` (`theme`, `version`, `hasFeature`, `checkCompatibility`) из `vuetools.theme` / `VueCore::VERSION`
 3. Подключает CSS PrimeVue (изоляция через класс `.vueApp`)
 4. Ваш компонент грузит ES modules из Import Map
 
@@ -785,11 +785,29 @@ public function loadCustomCssJs()
 }
 ```
 
-### Централизованная тема: требование версии
+### Compatibility API и требование версии
+
+С VueTools, где есть Compatibility API (#39), Extra может проверить версию и фичи
+синхронно до ES modules:
+
+```javascript
+if (!window.VueTools || typeof window.VueTools.checkCompatibility !== 'function') {
+    // Старое ядро без Compat API — см. fallback ниже
+} else {
+    try {
+        window.VueTools.checkCompatibility({ minVersion: '1.2.0' });
+    } catch (e) {
+        // установленная версия ниже требуемой; покажите алерт
+    }
+    if (!window.VueTools.hasFeature('useTheme')) {
+        // центральной темы нет
+    }
+}
+```
 
 `getActiveTheme()` / `@vuetools/useTheme` появились в **VueTools 1.2.0**. На более старом ядре ключ `vue` в Import Map есть, а `@vuetools/useTheme` — нет: базовая проверка выше пройдёт, но собранный модуль затем **жёстко упадёт** на импорте `getActiveTheme` (невнятная ошибка в консоли вместо алерта).
 
-Import Map версий с поддержкой тем содержит ключ-сигнал `vuetools/theme`. Если компонент использует централизованную тему, расширьте проверку:
+На сборках без `checkCompatibility` Import Map с темой содержит ключ-сигнал `vuetools/theme`. Если компонент использует централизованную тему, расширьте проверку:
 
 ```javascript
 // внутри registerVueCoreCheck(), вместо hasVueCore = ... imports.vue

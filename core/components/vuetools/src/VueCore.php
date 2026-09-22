@@ -31,6 +31,21 @@ class VueCore
         'primeicons' => '7.0.0',
     ];
 
+    /**
+     * Compatibility feature catalog for window.VueTools.hasFeature() (#39).
+     * Removing a name or changing its meaning is a major.
+     */
+    protected array $features = [
+        'useApi' => true,
+        'useLexicon' => true,
+        'useModx' => true,
+        'usePermission' => true,
+        'usePrimeVueLocale' => true,
+        'useTheme' => true,
+        'centralTheme' => true,
+        'dataTable' => true,
+    ];
+
     public function __construct(modX $modx, array $namespace = [])
     {
         $this->modx = $modx;
@@ -43,9 +58,10 @@ class VueCore
     }
 
     /**
-     * Register Import Map and inject window.VueTools = { theme } in one head block.
+     * Register Import Map and inject window.VueTools (theme + Compatibility API) in one head block.
      *
      * Theme value is the raw `vuetools.theme` setting; JS getActiveTheme() resolves it.
+     * Compat helpers come from js/mgr/compat.min.js (classic script) via VueToolsCompat.create.
      * Must run before any ES modules.
      *
      * @return bool True if registered, false if already registered
@@ -58,6 +74,7 @@ class VueCore
 
         $vendorUrl = $this->assetsUrl . 'vendor/';
         $composablesUrl = $this->assetsUrl . 'composables/';
+        $compatUrl = $this->assetsUrl . 'js/mgr/compat.min.js' . $this->assetQuery('js/mgr/compat.min.js');
         // Bust browser/HTTP cache when vendor or composable assets are rebuilt
         // (import maps without ?v= keep stale primevue.min.js and break new named exports).
         $vueQ = $this->assetQuery('vendor/vue.min.js');
@@ -90,13 +107,26 @@ class VueCore
 
         $json = json_encode($importMap, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
         $themePayload = json_encode(
-            ['theme' => (string) $this->modx->getOption('vuetools.theme', null, 'aura')],
+            [
+                'theme' => (string) $this->modx->getOption('vuetools.theme', null, 'aura'),
+                'version' => self::VERSION,
+            ],
             JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE
         );
+        $featuresJson = json_encode(
+            $this->features,
+            JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE
+        );
+        $compatOptions = '{"version":' . json_encode(self::VERSION, JSON_UNESCAPED_SLASHES)
+            . ',"features":' . $featuresJson . '}';
 
-        // One insert: import map first, then client theme config (classic script).
+        // Compatibility API (#39): window.VueTools.version, hasFeature(), checkCompatibility()
+        // Import map, then classic compat IIFE, then window.VueTools (theme + Compatibility API).
         $html = '<script type="importmap">' . "\n" . $json . "\n" . '</script>'
-            . '<script>window.VueTools=Object.assign({},window.VueTools||{},' . $themePayload . ');</script>';
+            . '<script src="' . htmlspecialchars($compatUrl, ENT_QUOTES, 'UTF-8') . '"></script>'
+            . '<script>window.VueTools=Object.assign({},window.VueTools||{},'
+            . $themePayload
+            . ',window.VueToolsCompat.create(' . $compatOptions . '));</script>';
 
         $this->unshiftHead($html);
 

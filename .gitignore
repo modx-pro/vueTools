@@ -7,6 +7,7 @@ dist/
 assets/components/vuetools/vendor/
 assets/components/vuetools/composables/
 assets/components/vuetools/css/
+assets/components/vuetools/js/mgr/compat.min.js
 
 # Vite
 *.local

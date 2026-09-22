@@ -283,7 +283,8 @@
   },
   "browser": {
     "global": "VueTools",
-    "keys": ["theme"],
+    "keys": ["theme", "version"],
+    "methods": ["hasFeature", "checkCompatibility"],
     "source": "core/components/vuetools/src/VueCore.php"
   },
   "settings": {
@@ -309,14 +310,17 @@
       "src/theme/modx/components.js",
       "src/theme/modx/components/",
       "src/demo/",
+      "src/runtime/",
       "vite.config.vendor.js",
       "vite.config.composables.js",
+      "vite.config.runtime.js",
       "vite.config.demo.js"
     ],
     "notes": [
       "Import Map prefix @vuetools/ is registered but not a supported public API",
       "composables/index.min.js has no dedicated Import Map specifier",
-      "Theme token modules are internal except named re-exports in primevue barrel"
+      "Theme token modules are internal except named re-exports in primevue barrel",
+      "window.VueToolsCompat and build output js/mgr/compat.min.js are internal (gitignored; npm run build:runtime)"
     ]
   }
 }
