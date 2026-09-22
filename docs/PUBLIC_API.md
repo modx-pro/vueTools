@@ -17,7 +17,7 @@
 | Import Map | Точные ключи из `VueCore::registerImportMap()` (кроме prefix `@vuetools/`) |
 | JS modules | Named (и существующие default) exports из vendor barrels и `@vuetools/use*` |
 | PHP | Service keys `vuetools` / `vueTools`, класс `\VueTools\Service`, публичные методы `VueCore` |
-| Browser | `window.VueTools.theme` |
+| Browser | `window.VueTools.theme`, `version`, `hasFeature()`, `checkCompatibility()` |
 | Settings | `vuetools.theme` (`aura` \| `modx`) |
 | CSS | `.vueApp` (изоляция), `.p-dark` (opt-in dark для `ModxTheme`) |
 
@@ -131,11 +131,19 @@ Default export у composable уже есть и остаётся. Новый def
 | Контракт | Значение |
 |----------|----------|
 | `window.VueTools.theme` | строка setting (`aura`, `modx`, …) |
+| `window.VueTools.version` | `\VueTools\VueCore::VERSION` (например `1.2.0-pl`) |
+| `window.VueTools.hasFeature(name)` | `boolean`; неизвестное имя → `false` |
+| `window.VueTools.checkCompatibility({ minVersion })` | `true` или throw `Error` |
 | `vuetools.theme` | system setting, default `aura` |
 | `.vueApp` | обязательный класс на mount-контейнере |
 | `.p-dark` | dark opt-in для `ModxTheme` |
 
-Прочие ключи на `window.VueTools` не входят в контракт.
+Каталог features для `hasFeature` не экспонируется как public map на `window.VueTools`
+(только через методы). `window.VueToolsCompat` и `js/mgr/compat.min.js` — internal.
+
+Без VueTools объект `window.VueTools` отсутствует. На сборках до Compatibility API
+есть только `theme`: Extra проверяет `typeof VueTools?.checkCompatibility === 'function'`
+или Import Map (`vuetools/theme`), как раньше.
 
 ---
 
@@ -157,21 +165,43 @@ Extra с `{ theme: { preset: Aura } }` или `ModxManagerTheme` продолж�
 
 ## Compatibility API
 
-Issue [#39](https://github.com/modx-pro/vueTools/issues/39) добавит `VueTools.version`,
-`VueTools.hasFeature()` и `VueTools.checkCompatibility()`. До его реализации эти
-свойства не входят в public API.
+Реализовано в [#39](https://github.com/modx-pro/vueTools/issues/39). Sync API на
+`window.VueTools` до ES modules (classic script `compat.min.js` + payload в
+`registerImportMap()`).
 
-Для Compatibility API действуют те же правила:
+```js
+VueTools.version
+// '1.2.0-pl'
+
+VueTools.hasFeature('useTheme') // true
+VueTools.hasFeature('noSuchThing') // false
+
+VueTools.checkCompatibility({ minVersion: '1.2.0' }) // true
+VueTools.checkCompatibility({ minVersion: '9.0.0' }) // throws Error
+```
+
+Стартовый каталог features (все `true` на текущем runtime):
+
+| Feature | Смысл |
+|---------|--------|
+| `useApi`, `useLexicon`, `useModx`, `usePermission` | public composables |
+| `usePrimeVueLocale` | локали PrimeVue |
+| `useTheme`, `centralTheme` | центральная тема / ключ `vuetools/theme` |
+| `dataTable` | named export `DataTable` в public barrel |
+
+Правила:
 
 1. Новый член `window.VueTools` добавляется в minor-релизе и в `public-api.json`.
 2. `hasFeature(name)` предпочтительнее сравнения версий, когда Extra проверяет
    отдельную возможность.
 3. Неизвестная feature возвращает `false`, а не бросает исключение.
-4. `checkCompatibility()` сообщает требуемую и установленную версии.
+4. `checkCompatibility({ minVersion })` при несовместимости кидает `Error` с
+   установленной и требуемой версиями; при успехе возвращает `true`. Сравнение
+   major.minor.patch, суффикс `-pl` / `-dev` игнорируется.
 5. Удаление feature или смена результата для уже известного имени требует major.
 
-До появления #39 Extra проверяет доступность Import Map specifier. Например,
-`vuetools/theme` означает поддержку централизованной темы с VueTools 1.2.0.
+Import Map fallback остаётся: `vuetools/theme` по-прежнему сигнал темы для ядер
+без Compatibility API.
 
 ---
 

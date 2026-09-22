@@ -383,6 +383,21 @@ function checkBrowser(manifest, browserSource) {
   } else {
     fail(`Browser global payload not found in ${manifest.browser.source}`)
   }
+
+  for (const method of manifest.browser.methods || []) {
+    if (!browserSource.includes(method)) {
+      fail(`Browser global method '${method}' not found in ${manifest.browser.source}`)
+    }
+  }
+
+  if ((manifest.browser.methods || []).length > 0) {
+    if (!browserSource.includes('VueToolsCompat.create')) {
+      fail(`${manifest.browser.source} must call VueToolsCompat.create for Compatibility API`)
+    }
+    if (!browserSource.includes('compat.min.js')) {
+      fail(`${manifest.browser.source} must load js/mgr/compat.min.js`)
+    }
+  }
 }
 
 function checkSettings(manifest) {
