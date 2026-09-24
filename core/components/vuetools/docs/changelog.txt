@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.1-pl] - 2026-09-24
+
+### Changed
+- Modx theme follows the MODX 3 manager more closely (#46): a Button with no severity uses the green `.primary-button` fill (`#6CB24A`), same as `severity="success"`; navy `#234368` stays on tabs, links and selection
+- Modx theme: single-line fields are 32px (`modx.field.height`), buttons stay 36px (`modx.control.height`) (#46)
+- Modx theme: ToggleSwitch, Slider, ProgressBar, Checkbox, RadioButton, DatePicker, Dialog, DataTable, Paginator, Tabs, Tooltip, Toast and menus restyled to the manager (#46)
+- DEVELOPER_GUIDE: version-aware VueTools check for theming consumers (#25)
+- GitHub issue and pull request templates (#45)
+
+### Fixed
+- Modx theme: DatePicker, Slider and ProgressBar light overrides follow `darkModeSelector`, including a `.p-dark` subtree (#48)
+- Line endings normalized to LF via `.gitattributes` (#48)
+
 ## [1.2.0-pl] - 2026-09-14
 
 ### Added
