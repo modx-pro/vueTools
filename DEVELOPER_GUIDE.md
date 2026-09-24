@@ -1,5 +1,7 @@
 # VueTools: руководство разработчика
 
+Public и internal API: [`docs/PUBLIC_API.md`](docs/PUBLIC_API.md). Машинный список: [`docs/public-api.json`](docs/public-api.json). Проверка: `npm run check:public-api`.
+
 ## Обзор
 
 VueTools отдаёт стек Vue 3 для компонентов MODX 3.x через ES Modules Import Map. Несколько extras берут одни и те же библиотеки и не копируют их в свой бандл.
@@ -19,8 +21,8 @@ VueTools отдаёт стек Vue 3 для компонентов MODX 3.x че
 |--------|------------|
 | `useLexicon` | Лексиконы MODX |
 | `useApi` | HTTP-клиент к стандартному connector API MODX |
-| `useModx` | Глобальный объект `MODx` |
-| `usePermission` | Проверка прав пользователя |
+| `useModx` | `window.MODx` (`config`/`user`/`siteId` are computed) |
+| `usePermission` | Проверка прав (`can` / `canAny` / `canAll`) |
 | `usePrimeVueLocale` | Локали PrimeVue для DataTable, DatePicker, Calendar (`de`, `en`, `es`, `fr`, `pl`, `ru`, `uk`) |
 | `getActiveTheme` (`@vuetools/useTheme`) | Центральная тема из `vuetools.theme` → `{ theme }` для `app.use(PrimeVue, …)` |
 
@@ -51,6 +53,8 @@ VueTools регистрирует Import Map в `<head>` страницы мен
 ```
 
 Алиасы `vuetools` и `vuetools/theme` ведут на тот же файл, что и `primevue`. Из них доступны named exports `Modx`, `ModxManagerTheme`, `ModxTheme` и остальной API PrimeVue. Ключ `vuetools/theme` ещё и version-aware сигнал: он есть только в сборках с централизованной темизацией (#22).
+
+В Import Map ещё есть prefix `@vuetools/` на каталог composables. Он внутренний: в extra берите точные ключи `@vuetools/use*`, не directory import.
 
 ### Как это работает
 
@@ -326,12 +330,13 @@ import { useModx } from '@vuetools/useModx'
 import { usePermission } from '@vuetools/usePermission'
 
 const { _ } = useLexicon()
-const { modx, config } = useModx()
-const { hasPermission } = usePermission()
+const { config, siteId, hasPermission } = useModx()
+const { can } = usePermission()
 
 // Ваш код компонента
 const items = ref([])
-const canEdit = computed(() => hasPermission('my_component_edit'))
+const assetsUrl = computed(() => config.value.assets_url)
+const canEdit = computed(() => can('my_component_edit'))
 </script>
 
 <template>
@@ -388,42 +393,53 @@ public function getLanguageTopics()
 
 ### useModx
 
-Глобальный объект MODX.
+Обёртка над `window.MODx`. `config`, `user` и `siteId` это `computed`.
 
 ```javascript
 import { useModx } from '@vuetools/useModx'
 
-const { modx, config, siteId } = useModx()
+const {
+  config,
+  user,
+  siteId,
+  hasPermission,
+  getManagerUrl,
+  getAssetsUrl,
+  getConnectorUrl,
+  getSetting,
+  getContextKey,
+  isManager,
+  fireEvent
+} = useModx()
 
-// Доступ к конфигурации
-const assetsUrl = config.assets_url
-const connectorUrl = config.connector_url
+// В <script setup> у computed нужно .value
+const assetsUrl = config.value.assets_url
+const connectorUrl = config.value.connector_url
+console.log(siteId.value)
+console.log(user.value)
 
-// MODX Site ID для авторизации API
-console.log(siteId) // "modx123..."
-
-// Полный объект MODx
-modx.msg.alert('Title', 'Message')
+if (hasPermission('edit_document')) { /* ... */ }
+fireEvent('myCustomEvent', { id: 1 })
 ```
 
 ### usePermission
 
-Проверка прав пользователя.
+Проверка прав из `window.MODx.perm`.
 
 ```javascript
 import { usePermission } from '@vuetools/usePermission'
 
-const { hasPermission, hasAnyPermission, hasAllPermissions } = usePermission()
+const { can, canAny, canAll, getAll, canEditResource } = usePermission()
 
-// Проверить одно право
-if (hasPermission('my_component_edit')) { ... }
+if (can('my_component_edit')) { /* ... */ }
+if (canAny(['edit', 'save', 'delete'])) { /* ... */ }
+if (canAll(['view', 'edit'])) { /* ... */ }
+if (canEditResource()) { /* ... */ }
 
-// Проверить любое из прав
-if (hasAnyPermission(['edit', 'save', 'delete'])) { ... }
-
-// Проверить все права
-if (hasAllPermissions(['view', 'edit'])) { ... }
+const all = getAll()
 ```
+
+Хелперы вроде `canCreateResource` и `canEditResource` тоже в return. Полный список в [`docs/public-api.json`](docs/public-api.json).
 
 ### useApi (базовый)
 
@@ -432,16 +448,17 @@ HTTP-клиент к стандартному connector API MODX.
 ```javascript
 import { useApi } from '@vuetools/useApi'
 
-const { get, post, put, delete: del } = useApi()
+const { get, post, put, delete: del, request, buildUrl } = useApi()
 
 // GET запрос
 const users = await get('security/user/getlist', { limit: 20 })
 
-// POST запрос
+// POST: по умолчанию FormData. JSON только с { json: true }
 const result = await post('security/user/create', {
   username: 'newuser',
   email: 'user@example.com'
 })
+const jsonResult = await post('security/user/create', { username: 'x' }, { json: true })
 ```
 
 **Примечание:** клиент рассчитан на стандартный connector MODX (`?action=processor/path`). Если у компонента свой роутер, заведите локальный `request.js` (см. ниже).

@@ -1,6 +1,8 @@
-# modxpro-vue-core
+# VueTools
 
 Vue core stack for MODX Revolution 3.x components.
+
+Public API: [`docs/PUBLIC_API.md`](docs/PUBLIC_API.md).
 
 ## Overview
 
@@ -40,7 +42,10 @@ npm run build:vendor
 # Build composables
 npm run build:composables
 
-# Build everything (gate)
+# Check public API surface
+npm run check:public-api
+
+# Build everything
 npm run build:all
 
 # Theme showcase
@@ -73,7 +78,7 @@ Flip the setting → no consumer rebuild. Extras that still hardcode `Aura` or `
 ```php
 // _build/build.transport.php
 $package->setAttribute('requires', [
-    'modxpro-vue-core' => '>=1.0.0'
+    'vuetools' => '>=1.2.0'
 ]);
 ```
 
@@ -103,17 +108,18 @@ export default defineConfig({
 ### 3. Import in code
 
 ```js
-import { createApp, ref } from 'vue';
-import { createPinia } from 'pinia';
-import { PrimeVue, DataTable, Button } from 'primevue';
-import { useApi, useLexicon } from '@modxpro-vue-core/';
-import { getPrimeVueLocale } from '@vuetools/usePrimeVueLocale';
-import { getActiveTheme } from '@vuetools/useTheme';
+import { createApp, ref } from 'vue'
+import { createPinia } from 'pinia'
+import { PrimeVue, DataTable, Button } from 'primevue'
+import { useApi } from '@vuetools/useApi'
+import { useLexicon } from '@vuetools/useLexicon'
+import { getPrimeVueLocale } from '@vuetools/usePrimeVueLocale'
+import { getActiveTheme } from '@vuetools/useTheme'
 
-const app = createApp(MyComponent);
-app.use(createPinia());
-app.use(PrimeVue, { ...getActiveTheme(), locale: getPrimeVueLocale() });
-app.mount('#my-app');
+const app = createApp(MyComponent)
+app.use(createPinia())
+app.use(PrimeVue, { ...getActiveTheme(), locale: getPrimeVueLocale() })
+app.mount('#my-app')
 ```
 
 `Aura` and `ModxManagerTheme` remain exported for gradual migration. Optional Import Map aliases: `vuetools`, `vuetools/theme`.
@@ -122,7 +128,7 @@ app.mount('#my-app');
 
 ## Version
 
-1.1.3-pl
+1.2.0-pl
 
 ## License
 
