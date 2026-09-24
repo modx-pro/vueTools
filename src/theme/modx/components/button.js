@@ -4,12 +4,17 @@
  * Mirrors the two manager button styles from
  * `sass/components/_secondary-button.scss` and `_primary-button.scss`:
  *
- *   severity="secondary"  white fill, 1px $borderColor, $darkGray label,
- *                         $lightGray on hover - the default toolbar button
- *   severity="success"    $green fill, white label - the Save action
- *   default (primary)     $colorSplash fill
+ *   default (primary)     $green fill, white label - MODX `.primary-button`
+ *                         (Save, Create, Login). Same paint as severity="success"
+ *   severity="secondary"  white fill, 1px ring #E4E4E4, #515151 label
+ *   severity="success"    same green as primary; kept so existing Save buttons
+ *                         do not change
  *
- * Normal size matches toolbar `.x-btn` height (36px / `modx.control.height`).
+ * Navy `$colorSplash` is not a button fill. It stays on tabs, links and
+ * selection through `semantic.primary`.
+ *
+ * Normal size matches toolbar `.x-btn`: 36px, 13px label, padding 10px 15px.
+ * Secondary uses `border: 0` plus `box-shadow: 0 0 0 1px #E4E4E4`, not a CSS border.
  * Labels use the regular weight; the manager never bolds button text.
  * Severity fills other than secondary inherit the base preset and resolve to
  * MODX colors through the primitive ramps.
@@ -19,8 +24,8 @@ export const root = {
   borderRadius: '{form.field.border.radius}',
   roundedBorderRadius: '2rem',
   gap: '0.375rem',
-  paddingX: '0.875rem',
-  paddingY: '{form.field.padding.y}',
+  paddingX: '15px',
+  paddingY: '10px',
   iconOnlyWidth: '{modx.control.height}',
   sm: {
     fontSize: '{form.field.sm.font.size}',
@@ -48,9 +53,24 @@ export const root = {
  */
 export const css = ({ dt }) => `
 .p-button:not(.p-button-sm):not(.p-button-lg) {
-    font-size: ${dt('modx.font.size.lg')};
+    font-size: ${dt('modx.font.size.base')};
+    line-height: 1;
     min-height: ${dt('modx.control.height')};
     box-sizing: border-box;
+}
+
+/* .x-btn draws its edge as a 1px ring, not a border. */
+.p-button-secondary:not(.p-button-outlined):not(.p-button-text):not(.p-button-link) {
+    border-width: 0;
+    box-shadow: 0 0 0 1px ${dt('button.secondary.border.color')};
+}
+
+.p-button-secondary:not(.p-button-outlined):not(.p-button-text):not(.p-button-link):hover {
+    box-shadow: 0 0 0 1px ${dt('button.secondary.hover.border.color')};
+}
+
+.p-button-secondary:not(.p-button-outlined):not(.p-button-text):not(.p-button-link):active {
+    box-shadow: 0 0 0 1px ${dt('button.secondary.active.border.color')};
 }
 
 .p-button.p-button-icon-only:not(.p-button-sm):not(.p-button-lg) {
@@ -64,6 +84,21 @@ export const css = ({ dt }) => `
 export const colorScheme = {
   light: {
     root: {
+      primary: {
+        background: '{green.600}',
+        hoverBackground: '{green.700}',
+        activeBackground: '{green.800}',
+        borderColor: '{green.600}',
+        hoverBorderColor: '{green.700}',
+        activeBorderColor: '{green.800}',
+        color: '#ffffff',
+        hoverColor: '#ffffff',
+        activeColor: '#ffffff',
+        focusRing: {
+          color: '{green.600}',
+          shadow: 'none'
+        }
+      },
       secondary: {
         background: '{surface.0}',
         hoverBackground: '{surface.300}',
@@ -94,6 +129,12 @@ export const colorScheme = {
      * green and yellow text still clears 4.5:1 on white.
      */
     outlined: {
+      primary: {
+        hoverBackground: '{green.50}',
+        activeBackground: '{green.100}',
+        borderColor: '{green.600}',
+        color: '{green.800}'
+      },
       secondary: {
         hoverBackground: '{surface.100}',
         activeBackground: '{surface.200}',
@@ -110,6 +151,11 @@ export const colorScheme = {
       }
     },
     text: {
+      primary: {
+        hoverBackground: '{green.50}',
+        activeBackground: '{green.100}',
+        color: '{green.800}'
+      },
       secondary: {
         hoverBackground: '{surface.100}',
         activeBackground: '{surface.200}',
@@ -130,6 +176,21 @@ export const colorScheme = {
   },
   dark: {
     root: {
+      primary: {
+        background: '{green.600}',
+        hoverBackground: '{green.700}',
+        activeBackground: '{green.800}',
+        borderColor: '{green.600}',
+        hoverBorderColor: '{green.700}',
+        activeBorderColor: '{green.800}',
+        color: '#ffffff',
+        hoverColor: '#ffffff',
+        activeColor: '#ffffff',
+        focusRing: {
+          color: '{green.600}',
+          shadow: 'none'
+        }
+      },
       secondary: {
         background: '{surface.800}',
         hoverBackground: '{surface.700}',
@@ -152,6 +213,12 @@ export const colorScheme = {
       }
     },
     outlined: {
+      primary: {
+        hoverBackground: 'color-mix(in srgb, {green.600}, transparent 88%)',
+        activeBackground: 'color-mix(in srgb, {green.600}, transparent 76%)',
+        borderColor: '{green.600}',
+        color: '{green.400}'
+      },
       secondary: {
         hoverBackground: '{surface.800}',
         activeBackground: '{surface.700}',
@@ -160,6 +227,11 @@ export const colorScheme = {
       }
     },
     text: {
+      primary: {
+        hoverBackground: 'color-mix(in srgb, {green.600}, transparent 88%)',
+        activeBackground: 'color-mix(in srgb, {green.600}, transparent 76%)',
+        color: '{green.400}'
+      },
       secondary: {
         hoverBackground: '{surface.800}',
         activeBackground: '{surface.700}',

@@ -11,9 +11,9 @@
  *   --modx-mgr-radius-subtle      3px       fields, buttons, tabs
  *   --modx-mgr-global-radius      4px       panels, overlays
  *
- * Toolbar `.x-btn` (Save / Copy) renders at 36px. That is the Normal control
- * height (`modx.control.height` = 2.25rem), applied to PrimeVue buttons and
- * single-line fields in the preset CSS — not the Ext field floor above.
+ * Toolbar `.x-btn` (Save / Copy) renders at 36px (`modx.control.height`).
+ * Single-line fields stay on the Ext floor (`modx.field.height` = 2rem):
+ * 13px type, 5px padding, 1px border. Do not pin fields to the button height.
  */
 
 import { dark } from './dark.js'
@@ -47,8 +47,8 @@ export const semantic = {
   },
 
   formField: {
-    paddingX: '0.5rem',
-    paddingY: '0.375rem',
+    paddingX: '5px',
+    paddingY: '5px',
     borderRadius: '{border.radius.sm}',
     transitionDuration: '{transition.duration}',
     sm: {
@@ -85,7 +85,7 @@ export const semantic = {
       padding: '0.375rem 0.5rem 0.25rem 0.5rem'
     },
     option: {
-      padding: '0.3125rem 0.5rem',
+      padding: '6px 8px',
       borderRadius: '0'
     },
     optionGroup: {
@@ -100,7 +100,7 @@ export const semantic = {
       gap: '0'
     },
     item: {
-      padding: '0.3125rem 0.625rem',
+      padding: '3px 21px',
       borderRadius: '0',
       gap: '0.5rem'
     },
@@ -184,9 +184,9 @@ export const semantic = {
         filledFocusBackground: '{surface.0}',
         borderColor: '{surface.300}',
         hoverBorderColor: '{surface.500}',
-        focusBorderColor: '{primary.color}',
+        focusBorderColor: '{neutral.500}',
         invalidBorderColor: '{red.600}',
-        color: '{surface.900}',
+        color: '#000000',
         disabledColor: '{surface.500}',
         placeholderColor: '{surface.600}',
         invalidPlaceholderColor: '{red.600}',
@@ -216,7 +216,7 @@ export const semantic = {
       overlay: {
         select: {
           background: '{surface.0}',
-          borderColor: '{surface.300}',
+          borderColor: '{neutral.500}',
           color: '{text.color}'
         },
         popover: {
@@ -233,13 +233,13 @@ export const semantic = {
 
       list: {
         option: {
-          focusBackground: '{surface.100}',
-          selectedBackground: '{highlight.background}',
-          selectedFocusBackground: '{highlight.focus.background}',
-          color: '{text.color}',
-          focusColor: '{text.hover.color}',
-          selectedColor: '{highlight.color}',
-          selectedFocusColor: '{highlight.focus.color}',
+          focusBackground: '#F0F0F0',
+          selectedBackground: '{surface.300}',
+          selectedFocusBackground: '{surface.300}',
+          color: '{surface.700}',
+          focusColor: '{surface.700}',
+          selectedColor: '{primary.700}',
+          selectedFocusColor: '{primary.700}',
           icon: {
             color: '{text.muted.color}',
             focusColor: '{text.hover.muted.color}'
@@ -253,15 +253,15 @@ export const semantic = {
 
       navigation: {
         item: {
-          focusBackground: '{surface.100}',
-          activeBackground: '{highlight.background}',
-          color: '{text.color}',
-          focusColor: '{text.hover.color}',
-          activeColor: '{highlight.color}',
+          focusBackground: '#F0F0F0',
+          activeBackground: '#F0F0F0',
+          color: '{surface.700}',
+          focusColor: '{surface.700}',
+          activeColor: '{surface.700}',
           icon: {
             color: '{text.muted.color}',
             focusColor: '{text.hover.muted.color}',
-            activeColor: '{highlight.color}'
+            activeColor: '{surface.700}'
           }
         },
         submenuLabel: {
@@ -271,7 +271,7 @@ export const semantic = {
         submenuIcon: {
           color: '{text.muted.color}',
           focusColor: '{text.hover.muted.color}',
-          activeColor: '{highlight.color}'
+          activeColor: '{surface.700}'
         }
       }
     },

@@ -64,7 +64,7 @@ app.use(PrimeVue, {
 
 Flip the setting → no consumer rebuild. Extras that still hardcode `Aura` or `ModxManagerTheme` keep working unchanged.
 
-`Modx` (Nora base, splash `#234368`, 3px radius, 13px body) is selected when `vuetools.theme = modx`. Save buttons use `severity="success"`; toolbar chrome uses `severity="secondary"`. Showcase / dark opt-in: `ModxTheme` + class `p-dark`. Details: [DEVELOPER_GUIDE.md](DEVELOPER_GUIDE.md).
+`Modx` (Nora base, splash `#234368`, 3px radius, 13px body) is selected when `vuetools.theme = modx`. A button with no severity and `severity="success"` both use the manager green `#6CB24A`. Toolbar chrome uses `severity="secondary"`. Fields are 32px, buttons 36px. Showcase / dark opt-in: `ModxTheme` + class `p-dark`. Details: [DEVELOPER_GUIDE.md](DEVELOPER_GUIDE.md).
 
 ## Usage in Extras
 

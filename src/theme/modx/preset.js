@@ -21,8 +21,9 @@ import { components } from './components.js'
  * $bodyfonts, $codefonts and the 11/12/13/14px steps from
  * `_colors-and-vars.scss`.
  *
- * `control.height` matches the rendered MODX manager `.x-btn` (Save / Copy ≈
- * 36px), not `--modx-mgr-field-height-min` (2rem), which is the Ext field floor.
+ * Two heights, matching the live manager:
+ *   `field.height`   2rem    `.x-form-text` (32px, 13px type, 5px padding)
+ *   `control.height` 2.25rem toolbar `.x-btn` (Save / Copy, 36px)
  */
 export const extend = {
   modx: {
@@ -42,6 +43,9 @@ export const extend = {
     control: {
       height: '2.25rem'
     },
+    field: {
+      height: '2rem'
+    },
     space: {
       /** Matches `#modx-resource-main-left` panel padding (15px). */
       panel: '15px'
@@ -53,7 +57,7 @@ export const extend = {
         window: {
           header: {
             background: '{surface.100}',
-            borderColor: '{surface.300}'
+            borderColor: '{surface.100}'
           }
         }
       }
@@ -85,7 +89,6 @@ export const css = ({ dt }) => `
 }
 
 .p-select-label.p-select-label,
-.p-datepicker-day-view.p-datepicker-day-view,
 .p-datepicker-time-picker.p-datepicker-time-picker span,
 .p-autocomplete-input-chip.p-autocomplete-input-chip input,
 .p-inputchips-input-item.p-inputchips-input-item input,
@@ -93,7 +96,7 @@ export const css = ({ dt }) => `
     font-size: ${dt('modx.font.size.base')};
 }
 
-/* Single-line controls share the MODX .x-btn height (Normal = 36px). */
+/* Fields use the Ext 13px face. Tabs and a few chrome bits stay on size.lg. */
 .p-inputtext:not(.p-inputtext-sm):not(.p-inputtext-lg),
 .p-select:not(.p-select-sm):not(.p-select-lg),
 .p-multiselect:not(.p-multiselect-sm):not(.p-multiselect-lg),
@@ -101,18 +104,35 @@ export const css = ({ dt }) => `
 .p-autocomplete:not(.p-autocomplete-sm):not(.p-autocomplete-lg) .p-autocomplete-input,
 .p-inputnumber:not(.p-inputnumber-sm):not(.p-inputnumber-lg) .p-inputnumber-input,
 .p-textarea:not(.p-textarea-sm):not(.p-textarea-lg) {
-    font-size: ${dt('modx.font.size.lg')};
+    font-size: ${dt('modx.font.size.base')};
 }
 
+/* Single-line fields match .x-form-text (32px). Buttons stay on control.height. */
 .p-inputtext:not(.p-inputtext-sm):not(.p-inputtext-lg),
 .p-select:not(.p-select-sm):not(.p-select-lg),
 .p-multiselect:not(.p-multiselect-sm):not(.p-multiselect-lg),
 .p-datepicker:not(.p-datepicker-sm):not(.p-datepicker-lg) .p-datepicker-input,
 .p-autocomplete:not(.p-autocomplete-sm):not(.p-autocomplete-lg) .p-autocomplete-input,
 .p-inputnumber:not(.p-inputnumber-sm):not(.p-inputnumber-lg) .p-inputnumber-input {
-    height: ${dt('modx.control.height')};
-    min-height: ${dt('modx.control.height')};
+    height: ${dt('modx.field.height')};
+    min-height: ${dt('modx.field.height')};
     box-sizing: border-box;
+}
+
+.p-menu.p-menu,
+.p-tieredmenu.p-tieredmenu,
+.p-contextmenu.p-contextmenu {
+    border-color: #C7C7C7;
+}
+
+.p-multiselect-option,
+.p-autocomplete-option {
+    border-bottom: 1px solid #E4E4E4;
+}
+
+.p-multiselect-list .p-multiselect-option:last-child,
+.p-autocomplete-list .p-autocomplete-option:last-child {
+    border-bottom-color: transparent;
 }
 `
 

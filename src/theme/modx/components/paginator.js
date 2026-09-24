@@ -1,8 +1,8 @@
 /**
  * Paginator tokens
  *
- * Rectangular nav buttons sized toward the manager paging toolbar
- * (`.x-paging-toolbar` / `.x-btn` with `box-shadow: 0 0 0 1px #E4E4E4`),
+ * Rectangular nav buttons sized to the manager paging toolbar
+ * (`.x-toolbar .x-btn` ≈ 44×34, padding 8px 13px, ring `0 0 0 1px #E4E4E4`),
  * not Aura’s 2.5rem circles. Selected page = white + splash label/border
  * (no primary.100 fill — that reads as “Aura highlight”, not MODX).
  */
@@ -14,8 +14,8 @@ export const root = {
 }
 
 export const navButton = {
-  width: '1.75rem',
-  height: '1.75rem',
+  width: '2.75rem',
+  height: '2.125rem',
   borderRadius: '{border.radius.sm}',
   background: '{content.background}',
   hoverBackground: '{content.hover.background}',
@@ -56,6 +56,17 @@ export const css = ({ dt }) => `
 .p-paginator-page {
     box-shadow: 0 0 0 1px ${dt('content.border.color')};
     background: ${dt('paginator.nav.button.background')};
+    padding: 8px 13px;
+    box-sizing: border-box;
+}
+
+/* .x-tbar-page-* glyph box is 18x18 (prev/next font-size 18px). */
+.p-paginator-first-icon,
+.p-paginator-prev-icon,
+.p-paginator-next-icon,
+.p-paginator-last-icon {
+    width: 18px;
+    height: 18px;
 }
 
 .p-paginator-page-selected {

@@ -20,8 +20,19 @@ export const emptyMessage = {
   padding: '{list.option.padding}'
 }
 
+export const css = () => `
+.p-select-option {
+    border-bottom: 1px solid #E4E4E4;
+}
+
+.p-select-list .p-select-option:last-child {
+    border-bottom-color: transparent;
+}
+`
+
 export default {
   dropdown,
   checkmark,
-  emptyMessage
+  emptyMessage,
+  css
 }

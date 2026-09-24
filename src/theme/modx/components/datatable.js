@@ -24,7 +24,7 @@ export const header = {
 }
 
 export const headerCell = {
-  padding: '0.375rem 0.625rem',
+  padding: '10px',
   gap: '0.375rem',
   sm: {
     padding: '0.25rem 0.375rem'
@@ -39,8 +39,8 @@ export const columnTitle = {
 }
 
 export const bodyCell = {
-  borderColor: '{datatable.border.color}',
-  padding: '0.375rem 0.625rem',
+  borderColor: '#EAEAEA',
+  padding: '10px',
   sm: {
     padding: '0.25rem 0.375rem'
   },
@@ -50,7 +50,7 @@ export const bodyCell = {
 }
 
 export const footerCell = {
-  padding: '0.375rem 0.625rem',
+  padding: '10px',
   sm: {
     padding: '0.25rem 0.375rem'
   },
@@ -130,6 +130,13 @@ export const colorScheme = {
 export const css = ({ dt }) => `
 .p-datatable-table {
     font-size: ${dt('modx.font.size.sm')};
+    line-height: 15px;
+}
+
+.p-datatable-table-container {
+    border: 1px solid ${dt('datatable.border.color')};
+    border-radius: ${dt('border.radius.sm')};
+    overflow: hidden;
 }
 `
 

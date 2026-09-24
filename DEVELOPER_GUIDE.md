@@ -153,11 +153,22 @@ app.use(PrimeVue, { theme: ModxTheme, locale: getPrimeVueLocale() })
 
 | Действие | Severity | Визуал |
 |----------|----------|--------|
-| Save / Create | `success` | зелёный `$green` `#6CB24A` |
-| Toolbar / Cancel | `secondary` | белый + 1px border |
-| Primary focus / selection | default (без severity) | splash navy `#234368` |
+| Save / Create / кнопка без severity | `success` или default | зелёный `$green` `#6CB24A` (`.primary-button`) |
+| Toolbar / Cancel | `secondary` | белый + кольцо `#E4E4E4` |
+| Ссылки, вкладки, выделение | `primary` токен, не заливка кнопки | splash navy `#234368` |
 
-`semantic.primary` остаётся navy (focus ring, selected, tabs, checkbox). Зелёный Save только через `severity="success"`.
+`semantic.primary` остаётся navy (вкладки, ссылки, selected). Заливка кнопки без severity и `severity="success"` обе зелёные, как `.primary-button` в менеджере. Extra не должна подменять default на `success` только ради зелёного: после этой темы хелпер вроде `getPrimarySaveSeverity()` не нужен.
+
+### Высоты поля и кнопки
+
+В менеджере 3.2 это разные контролы, не один ряд на одну высоту:
+
+| Токен | Значение | Что |
+|-------|----------|-----|
+| `modx.field.height` | `2rem` (32px) | InputText, Select, InputGroup, InputNumber |
+| `modx.control.height` | `2.25rem` (36px) | Button, toolbar `.x-btn` |
+
+Не растягивайте поля и Select до `control.height` в тулбаре extra. Ступенька 32/36 — намерение темы. Если extra уже тянет `.p-inputtext` / `.p-select` / `.p-inputgroup` к 36px (как MiniShop3 `.ms3-control-row`), снимите эти селекторы и оставьте высоту теме.
 
 ### Три яруса токенов
 
@@ -199,9 +210,9 @@ npm run build:demo    # статическая сборка showcase
 ### Отличия от Aura
 
 - База Nora
-- Radius 3px, body 13px, высота полей около 32px
+- Radius 3px, body 13px, поле 32px, кнопка 36px
 - Splash navy `#234368`, плотная таблица и tab strip как в менеджере
-- Save = `severity="success"`, toolbar = `severity="secondary"`
+- Кнопка без severity и `severity="success"` — зелёный `.primary-button`; toolbar chrome — `severity="secondary"`
 
 ---
 
@@ -829,7 +840,7 @@ if (window.MY_COMPONENT_VUE_CORE_MISSING) {
 - [ ] Для ES modules вызывать `addVueModule()`, а не голый `regClientStartupHTMLBlock()`
 - [ ] Добавить `class="vueApp"` на контейнеры Vue
 - [ ] Для DataTable / DatePicker / Calendar передать `locale: getPrimeVueLocale()` в `app.use(PrimeVue, { ... })`
-- [ ] Тему брать через `getActiveTheme()` из `@vuetools/useTheme` (не хардкодить Aura/Modx); Save = `severity="success"`
+- [ ] Тему брать через `getActiveTheme()` из `@vuetools/useTheme` (не хардкодить Aura/Modx). Save зелёный и без severity; toolbar = `severity="secondary"`. Не выравнивать поля тулбара под высоту кнопки.
 - [ ] В `external` добавить `@vuetools/useTheme`
 - [ ] Если импорт идёт из `primevue`, для пресетов `external` менять не нужно (`Modx` уже в бандле)
 - [ ] Загрузить топики лексиконов в контроллере
