@@ -24,14 +24,26 @@ export const label = {
 export const colorScheme = {
   light: {
     root: {
-      background: '#fdfefd'
+      background: '#fdfefd',
+      borderWidth: '1px',
+      borderColor: '{green.600}'
+    }
+  },
+  dark: {
+    root: {
+      borderWidth: '0',
+      borderColor: 'transparent'
     }
   }
 }
 
-export const css = () => `
-html:not(.p-dark) .p-progressbar {
-    border: 1px solid #6CB24A;
+/**
+ * `root.border*` are MODX keys with a dark value, so the green frame follows
+ * `darkModeSelector` (including a `.p-dark` subtree) instead of `html`.
+ */
+export const css = ({ dt }) => `
+.p-progressbar {
+    border: ${dt('progressbar.border.width')} solid ${dt('progressbar.border.color')};
     box-sizing: border-box;
 }
 `

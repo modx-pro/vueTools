@@ -50,6 +50,8 @@ export const colorScheme = {
     handle: {
       background: '#E7E7E7',
       hoverBackground: '#F6F6F6',
+      borderWidth: '1px',
+      borderColor: '#B0B0B0',
       content: {
         background: '#9E9E9E',
         hoverBackground: '#9E9E9E'
@@ -61,6 +63,8 @@ export const colorScheme = {
       background: '{surface.600}'
     },
     handle: {
+      borderWidth: '0',
+      borderColor: 'transparent',
       content: {
         background: '{surface.300}',
         hoverBackground: '{surface.300}'
@@ -69,9 +73,13 @@ export const colorScheme = {
   }
 }
 
-export const css = () => `
-html:not(.p-dark) .p-slider-handle {
-    border: 1px solid #B0B0B0;
+/**
+ * The sprite edge is light-only. `handle.border*` are MODX keys with a dark
+ * value, so a `.p-dark` subtree drops the edge instead of inheriting it.
+ */
+export const css = ({ dt }) => `
+.p-slider-handle {
+    border: ${dt('slider.handle.border.width')} solid ${dt('slider.handle.border.color')};
     box-sizing: border-box;
 }
 `
