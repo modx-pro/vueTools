@@ -59,72 +59,117 @@ export const date = {
   selectedColor: '#ffffff'
 }
 
+/**
+ * Light values mirror the manager calendar. Every key also has a dark value so
+ * the tokens follow `darkModeSelector`, including a `.p-dark` subtree; the dark
+ * values keep Nora's defaults. `navButton`, `weekDay.border*` and `otherMonth`
+ * are MODX-only keys read by the CSS below.
+ */
 export const colorScheme = {
   light: {
+    panel: {
+      background: '#FBFBFB'
+    },
+    selectMonth: {
+      color: '#515151'
+    },
+    selectYear: {
+      color: '#515151'
+    },
+    weekDay: {
+      borderWidth: '1px',
+      borderColor: '#E4E4E4'
+    },
+    date: {
+      color: '#999999'
+    },
     today: {
       background: 'transparent',
-      color: '#000000'
+      color: '#999999'
+    },
+    otherMonth: {
+      color: '#DCDCDC',
+      disabledOpacity: '1'
+    },
+    navButton: {
+      color: '{primary.color}',
+      hoverColor: '{primary.color}',
+      hoverBackground: 'transparent',
+      opacity: '0.6'
     }
   },
   dark: {
+    panel: {
+      background: '{content.background}'
+    },
+    selectMonth: {
+      color: '{content.color}'
+    },
+    selectYear: {
+      color: '{content.color}'
+    },
+    weekDay: {
+      borderWidth: '0',
+      borderColor: 'transparent'
+    },
+    date: {
+      color: '{content.color}'
+    },
     today: {
       background: 'transparent',
       color: '{surface.0}'
+    },
+    otherMonth: {
+      color: '{content.color}',
+      disabledOpacity: '{disabled.opacity}'
+    },
+    navButton: {
+      color: '{button.text.secondary.color}',
+      hoverColor: '{button.text.secondary.color}',
+      hoverBackground: '{button.text.secondary.hover.background}',
+      opacity: '1'
     }
   }
 }
 
-export const css = () => `
+export const css = ({ dt }) => `
 .p-datepicker-day-view,
 .p-datepicker-weekday {
     font-size: 0.6875rem;
     font-weight: 700;
 }
 
-html:not(.p-dark) .p-datepicker-panel {
-    background: #FBFBFB;
-}
-
-html:not(.p-dark) .p-datepicker-select-month,
-html:not(.p-dark) .p-datepicker-select-year {
-    color: #515151;
+.p-datepicker-select-month,
+.p-datepicker-select-year {
     font-size: 0.6875rem;
     font-weight: 400;
 }
 
-html:not(.p-dark) .p-datepicker-prev-button,
-html:not(.p-dark) .p-datepicker-next-button {
-    color: #234368;
-    opacity: 0.6;
+/* The nav arrows are text/secondary Buttons; the panel prefix outranks those. */
+.p-datepicker-panel .p-datepicker-prev-button.p-datepicker-prev-button,
+.p-datepicker-panel .p-datepicker-next-button.p-datepicker-next-button {
+    color: ${dt('datepicker.nav.button.color')};
+    opacity: ${dt('datepicker.nav.button.opacity')};
 }
 
-html:not(.p-dark) .p-datepicker-prev-button:not(:disabled):hover,
-html:not(.p-dark) .p-datepicker-next-button:not(:disabled):hover {
-    color: #234368;
+.p-datepicker-panel .p-datepicker-prev-button.p-datepicker-prev-button:not(:disabled):hover,
+.p-datepicker-panel .p-datepicker-next-button.p-datepicker-next-button:not(:disabled):hover {
+    color: ${dt('datepicker.nav.button.hover.color')};
     opacity: 1;
-    background: transparent;
+    background: ${dt('datepicker.nav.button.hover.background')};
 }
 
-html:not(.p-dark) .p-datepicker-weekday-cell {
-    border-bottom: 1px solid #E4E4E4;
+.p-datepicker-weekday-cell {
+    border-bottom: ${dt('datepicker.week.day.border.width')} solid ${dt('datepicker.week.day.border.color')};
 }
 
-html:not(.p-dark) .p-datepicker-day:not(.p-datepicker-day-selected) {
-    color: #999999;
+/* :where() keeps this below the hover rule, so hovered days stay readable. */
+.p-datepicker-day-cell[data-p-other-month='true'] > .p-datepicker-day:where(:not(.p-datepicker-day-selected)) {
+    color: ${dt('datepicker.other.month.color')};
 }
 
-html:not(.p-dark) .p-datepicker-today > .p-datepicker-day:not(.p-datepicker-day-selected) {
-    border-color: #234368;
-    color: #999999;
-}
-
-html:not(.p-dark) .p-datepicker-day-selected {
-    border-color: #ffffff;
-}
-
-html:not(.p-dark) .p-datepicker-day-cell[data-p-other-month='true'] > .p-datepicker-day {
-    color: #DCDCDC;
-    opacity: 1;
+.p-datepicker-day-cell[data-p-other-month='true'] > .p-datepicker-day.p-disabled {
+    opacity: ${dt('datepicker.other.month.disabled.opacity')};
 }
 `
 
