@@ -56,7 +56,7 @@ VueTools регистрирует Import Map в `<head>` страницы мен
 
 1. Плагин `VueCoreManager` срабатывает на `OnManagerPageBeforeRender`
 2. В один блок в `<head>`: Import Map и `window.VueTools = { theme }` из `vuetools.theme` (default `aura`)
-3. Подключает CSS PrimeVue (изоляция через класс `.vueApp`)
+3. Подключает `vuetools.css` (PrimeIcons под `.vueApp`; стили компонентов PrimeVue — runtime, глобально)
 4. Ваш компонент грузит ES modules из Import Map
 
 ---
@@ -534,7 +534,9 @@ await request.post('/api/products', { name: 'New Product' })
 
 ## Изоляция стилей
 
-Стили PrimeVue живут под префиксом `.vueApp`. Контейнер Vue-виджета должен иметь этот класс:
+Класс `.vueApp` на корне Vue-виджета **обязателен для иконок**: PostCSS в сборке `vuetools.css` префиксует только правила PrimeIcons (`.pi…` → `.vueApp .pi…`). Без `.vueApp` иконки пропадают.
+
+Стили **компонентов** PrimeVue 4 (`Button`, `DataTable`, …) идут из `@primeuix/styled` в runtime и **глобальны** (селекторы `.p-*` без префикса `.vueApp`). Полной CSS-изоляции от ExtJS для компонентов пакет сейчас не даёт. Держите виджет в `.vueApp` по контракту иконок и как единый mount-root; при конфликте с ExtJS сужайте селекторы в CSS extra.
 
 ```html
 <!-- В ExtJS панели или HTML -->
@@ -838,7 +840,7 @@ if (window.MY_COMPONENT_VUE_CORE_MISSING) {
 - [ ] Реализовать `addVueModule()` с проверкой зависимости (см. раздел выше)
 - [ ] Добавить лексиконы ошибки (`_error`, `_vuetools_required`)
 - [ ] Для ES modules вызывать `addVueModule()`, а не голый `regClientStartupHTMLBlock()`
-- [ ] Добавить `class="vueApp"` на контейнеры Vue
+- [ ] Добавить `class="vueApp"` на контейнеры Vue (нужен для `.pi` / PrimeIcons; стили `.p-*` глобальны)
 - [ ] Для DataTable / DatePicker / Calendar передать `locale: getPrimeVueLocale()` в `app.use(PrimeVue, { ... })`
 - [ ] Тему брать через `getActiveTheme()` из `@vuetools/useTheme` (не хардкодить Aura/Modx). Save зелёный и без severity; toolbar = `severity="secondary"`. Не выравнивать поля тулбара под высоту кнопки.
 - [ ] В `external` добавить `@vuetools/useTheme`
