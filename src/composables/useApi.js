@@ -138,8 +138,8 @@ export function useApi(options = {}) {
   /**
    * DELETE request
    */
-  async function del(action, params = {}) {
-    return request(action, params, { method: 'DELETE' })
+  async function del(action, params = {}, options = {}) {
+    return request(action, params, { method: 'DELETE', ...options })
   }
 
   return {
