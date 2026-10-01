@@ -49,7 +49,7 @@ npm run demo
 
 ## Theme (central)
 
-Admin setting `vuetools.theme` (`aura` default, or `modx`). VueCoreManager injects `window.VueTools = { theme }`. Migrated extras resolve it once:
+Admin setting `vuetools.theme` (`aura` default, or `modx`). VueCoreManager injects `window.VueTools` (`theme`, `version`, `versions` including `primeicons`). Migrated extras resolve theme once:
 
 ```js
 import { PrimeVue } from 'primevue'
