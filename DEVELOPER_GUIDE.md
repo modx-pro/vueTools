@@ -55,7 +55,7 @@ VueTools регистрирует Import Map в `<head>` страницы мен
 ### Как это работает
 
 1. Плагин `VueCoreManager` срабатывает на `OnManagerPageBeforeRender`
-2. В один блок в `<head>`: Import Map и `window.VueTools = { theme }` из `vuetools.theme` (default `aura`)
+2. В один блок в `<head>`: Import Map и `window.VueTools` (`theme`, `version`, `versions` с `vue` / `pinia` / `primevue` / `primeicons`) из настроек пакета
 3. Подключает CSS PrimeVue (изоляция через класс `.vueApp`)
 4. Ваш компонент грузит ES modules из Import Map
 

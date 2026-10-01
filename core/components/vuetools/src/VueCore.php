@@ -43,9 +43,10 @@ class VueCore
     }
 
     /**
-     * Register Import Map and inject window.VueTools = { theme } in one head block.
+     * Register Import Map and inject window.VueTools (theme, version, versions).
      *
-     * Theme value is the raw `vuetools.theme` setting; JS getActiveTheme() resolves it.
+     * Theme is the raw `vuetools.theme` setting; JS getActiveTheme() resolves it.
+     * `versions` mirrors `$this->versions` (vue, pinia, primevue, primeicons) plus package.
      * Must run before any ES modules.
      *
      * @return bool True if registered, false if already registered
@@ -89,14 +90,21 @@ class VueCore
         ];
 
         $json = json_encode($importMap, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
-        $themePayload = json_encode(
-            ['theme' => (string) $this->modx->getOption('vuetools.theme', null, 'aura')],
+        $clientPayload = json_encode(
+            [
+                'theme' => (string) $this->modx->getOption('vuetools.theme', null, 'aura'),
+                'version' => self::VERSION,
+                'versions' => array_merge(
+                    ['package' => self::VERSION],
+                    $this->versions
+                ),
+            ],
             JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE
         );
 
-        // One insert: import map first, then client theme config (classic script).
+        // Import map first, then client config (classic script).
         $html = '<script type="importmap">' . "\n" . $json . "\n" . '</script>'
-            . '<script>window.VueTools=Object.assign({},window.VueTools||{},' . $themePayload . ');</script>';
+            . '<script>window.VueTools=Object.assign({},window.VueTools||{},' . $clientPayload . ');</script>';
 
         $this->unshiftHead($html);
 

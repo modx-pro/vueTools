@@ -2,7 +2,7 @@
 /**
  * VueCoreManager Plugin
  *
- * Registers Import Map + window.VueTools = { theme } and includes CSS on
+ * Registers Import Map + window.VueTools (theme, version, versions) and includes CSS on
  * manager page load. Theme comes from system setting vuetools.theme.
  *
  * Events: OnManagerPageBeforeRender
