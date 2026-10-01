@@ -1,7 +1,8 @@
 /**
  * useLexicon composable
  *
- * Working with MODX lexicons
+ * Working with MODX lexicons already loaded into window.MODx.lang
+ * (see getLanguageTopics() in the manager controller).
  */
 
 /**
@@ -74,25 +75,10 @@ export function useLexicon(options = {}) {
     return result
   }
 
-  /**
-   * Load lexicon topics dynamically
-   *
-   * @param {string|string[]} topics - Topics to load
-   * @returns {Promise<void>}
-   */
-  async function load(topics) {
-    const topicList = Array.isArray(topics) ? topics : [topics]
-
-    // This would need to call MODX lexicon loader
-    // For now just log warning
-    console.warn('[useLexicon] Dynamic topic loading not implemented:', topicList)
-  }
-
   return {
     _,
     has,
-    getByPrefix,
-    load
+    getByPrefix
   }
 }
 
