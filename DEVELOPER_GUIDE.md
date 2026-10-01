@@ -21,6 +21,7 @@ VueTools отдаёт стек Vue 3 для компонентов MODX 3.x че
 | `useApi` | HTTP-клиент к стандартному connector API MODX |
 | `useModx` | Глобальный объект `MODx` |
 | `usePermission` | Проверка прав пользователя |
+| `useDebug` | Диагностика Extra: `log` / `warn` / `error` / `time`; `VueTools.debug.enable()` |
 | `usePrimeVueLocale` | Локали PrimeVue для DataTable, DatePicker, Calendar (`de`, `en`, `es`, `fr`, `pl`, `ru`, `uk`) |
 | `getActiveTheme` (`@vuetools/useTheme`) | Центральная тема из `vuetools.theme` → `{ theme }` для `app.use(PrimeVue, …)` |
 
@@ -41,6 +42,7 @@ VueTools регистрирует Import Map в `<head>` страницы мен
     "vuetools": "/assets/components/vuetools/vendor/primevue.min.js",
     "vuetools/theme": "/assets/components/vuetools/vendor/primevue.min.js",
     "@vuetools/useApi": "/assets/components/vuetools/composables/useApi.min.js",
+    "@vuetools/useDebug": "/assets/components/vuetools/composables/useDebug.min.js",
     "@vuetools/useLexicon": "/assets/components/vuetools/composables/useLexicon.min.js",
     "@vuetools/useModx": "/assets/components/vuetools/composables/useModx.min.js",
     "@vuetools/usePermission": "/assets/components/vuetools/composables/usePermission.min.js",
@@ -237,6 +239,7 @@ export default defineConfig({
         'pinia',
         'primevue',
         '@vuetools/useApi',
+        '@vuetools/useDebug',
         '@vuetools/useLexicon',
         '@vuetools/useModx',
         '@vuetools/usePermission',
@@ -424,6 +427,39 @@ if (hasAnyPermission(['edit', 'save', 'delete'])) { ... }
 // Проверить все права
 if (hasAllPermissions(['view', 'edit'])) { ... }
 ```
+
+### useDebug
+
+Диагностика Extra в менеджере. По умолчанию выключена: `log` / `warn` / `error` / `time` ничего не пишут в console. Чувствительные поля (`password`, `token`, `HTTP_MODAUTH`, …) маскируются.
+
+Из консоли браузера (модуль `@vuetools/useDebug` подключается VueTools автоматически):
+
+```javascript
+VueTools.debug.enable()
+VueTools.debug.disable()
+```
+
+При `enable()` один раз выводятся версия VueTools, Vue / Pinia / PrimeVue, состояние Import Map и краткие notes по совместимости.
+
+В коде Extra:
+
+```javascript
+import { useDebug } from '@vuetools/useDebug'
+
+const debug = useDebug()
+
+debug.log('loaded', { id: recordId })
+debug.warn('deprecated option')
+debug.error('save failed', err)
+
+const end = debug.time('loadProducts')
+await loadProducts()
+end() // [VueTools] loadProducts: 42.3ms
+```
+
+При включённом debug `useApi` логирует каждый запрос (method, action, duration, ok) без токенов в URL.
+
+В Vite `external` добавьте `@vuetools/useDebug`.
 
 ### useApi (базовый)
 

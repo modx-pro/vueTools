@@ -5,6 +5,13 @@
  */
 
 export { useApi, default as useApiDefault } from './useApi.js'
+export {
+  useDebug,
+  enable as enableDebug,
+  disable as disableDebug,
+  isDebugEnabled,
+  default as useDebugDefault,
+} from './useDebug.js'
 export { useLexicon, default as useLexiconDefault } from './useLexicon.js'
 export { useModx, default as useModxDefault } from './useModx.js'
 export { usePermission, default as usePermissionDefault } from './usePermission.js'

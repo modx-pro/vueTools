@@ -8,6 +8,7 @@ export default defineConfig({
     lib: {
       entry: {
         'useApi': resolve(__dirname, 'src/composables/useApi.js'),
+        'useDebug': resolve(__dirname, 'src/composables/useDebug.js'),
         'useLexicon': resolve(__dirname, 'src/composables/useLexicon.js'),
         'useModx': resolve(__dirname, 'src/composables/useModx.js'),
         'usePermission': resolve(__dirname, 'src/composables/usePermission.js'),
@@ -21,7 +22,8 @@ export default defineConfig({
     rollupOptions: {
       // primelocale намеренно не в external — бандлится в usePrimeVueLocale.min.js (только используемые локали), чтобы не регистрировать отдельный entry в Import Map
       // primevue — external для getActiveTheme (Aura / ModxManagerTheme из Import Map)
-      external: ['vue', 'pinia', 'primevue'],
+      // @vuetools/useDebug — shared debug flag; must not be inlined into useApi.min.js
+      external: ['vue', 'pinia', 'primevue', '@vuetools/useDebug'],
       output: {
         globals: {
           vue: 'Vue',

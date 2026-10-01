@@ -4,6 +4,8 @@
  * HTTP client for working with MODX API
  */
 
+import { isDebugEnabled, logRequest } from '@vuetools/useDebug'
+
 /**
  * @typedef {Object} ApiResponse
  * @property {boolean} success
@@ -60,6 +62,21 @@ export function useApi(options = {}) {
   async function request(action, params = {}, options = {}) {
     const method = options.method || 'GET'
     const isGet = method.toUpperCase() === 'GET'
+    const debugOn = isDebugEnabled()
+    const now = () => (typeof performance !== 'undefined' ? performance.now() : Date.now())
+    const startedAt = debugOn ? now() : 0
+
+    function logDebugOutcome(ok, errorMessage) {
+      const endedAt = now()
+      logRequest({
+        method: method.toUpperCase(),
+        action,
+        url,
+        durationMs: endedAt - startedAt,
+        ok,
+        ...(errorMessage ? { error: errorMessage } : {}),
+      })
+    }
 
     const fetchOptions = {
       method,
@@ -97,21 +114,33 @@ export function useApi(options = {}) {
       }
     }
 
-    const response = await fetch(url, fetchOptions)
+    try {
+      const response = await fetch(url, fetchOptions)
 
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}: ${response.statusText}`)
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`)
+      }
+
+      const data = await response.json()
+
+      if (data.success === false) {
+        const error = new Error(data.message || 'Request failed')
+        error.data = data
+        throw error
+      }
+
+      if (debugOn) {
+        logDebugOutcome(true)
+      }
+
+      return data
+    } catch (err) {
+      if (debugOn) {
+        const message = err instanceof Error ? err.message : String(err)
+        logDebugOutcome(false, message)
+      }
+      throw err
     }
-
-    const data = await response.json()
-
-    if (data.success === false) {
-      const error = new Error(data.message || 'Request failed')
-      error.data = data
-      throw error
-    }
-
-    return data
   }
 
   /**

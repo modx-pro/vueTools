@@ -43,9 +43,9 @@ class VueCore
     }
 
     /**
-     * Register Import Map and inject window.VueTools = { theme } in one head block.
+     * Register Import Map and inject window.VueTools (theme, version, versions)
+     * plus load @vuetools/useDebug so VueTools.debug.enable() works in the console.
      *
-     * Theme value is the raw `vuetools.theme` setting; JS getActiveTheme() resolves it.
      * Must run before any ES modules.
      *
      * @return bool True if registered, false if already registered
@@ -64,6 +64,7 @@ class VueCore
         $piniaQ = $this->assetQuery('vendor/pinia.min.js');
         $primevueQ = $this->assetQuery('vendor/primevue.min.js');
         $useApiQ = $this->assetQuery('composables/useApi.min.js');
+        $useDebugQ = $this->assetQuery('composables/useDebug.min.js');
         $useLexiconQ = $this->assetQuery('composables/useLexicon.min.js');
         $useModxQ = $this->assetQuery('composables/useModx.min.js');
         $usePermissionQ = $this->assetQuery('composables/usePermission.min.js');
@@ -79,6 +80,7 @@ class VueCore
                 'vuetools' => $vendorUrl . 'primevue.min.js' . $primevueQ,
                 'vuetools/theme' => $vendorUrl . 'primevue.min.js' . $primevueQ,
                 '@vuetools/useApi' => $composablesUrl . 'useApi.min.js' . $useApiQ,
+                '@vuetools/useDebug' => $composablesUrl . 'useDebug.min.js' . $useDebugQ,
                 '@vuetools/useLexicon' => $composablesUrl . 'useLexicon.min.js' . $useLexiconQ,
                 '@vuetools/useModx' => $composablesUrl . 'useModx.min.js' . $useModxQ,
                 '@vuetools/usePermission' => $composablesUrl . 'usePermission.min.js' . $usePermissionQ,
@@ -89,14 +91,24 @@ class VueCore
         ];
 
         $json = json_encode($importMap, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
-        $themePayload = json_encode(
-            ['theme' => (string) $this->modx->getOption('vuetools.theme', null, 'aura')],
+        $clientPayload = json_encode(
+            [
+                'theme' => (string) $this->modx->getOption('vuetools.theme', null, 'aura'),
+                'version' => self::VERSION,
+                'versions' => [
+                    'package' => self::VERSION,
+                    'vue' => $this->versions['vue'],
+                    'pinia' => $this->versions['pinia'],
+                    'primevue' => $this->versions['primevue'],
+                ],
+            ],
             JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE
         );
 
-        // One insert: import map first, then client theme config (classic script).
+        // Import map, client config, then load useDebug so VueTools.debug.enable() works in console.
         $html = '<script type="importmap">' . "\n" . $json . "\n" . '</script>'
-            . '<script>window.VueTools=Object.assign({},window.VueTools||{},' . $themePayload . ');</script>';
+            . '<script>window.VueTools=Object.assign({},window.VueTools||{},' . $clientPayload . ');</script>'
+            . '<script type="module">import "@vuetools/useDebug";</script>';
 
         $this->unshiftHead($html);
 

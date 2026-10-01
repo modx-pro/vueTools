@@ -13,7 +13,7 @@ Shared Vue 3, Pinia, and PrimeVue for MODX Extras through an ES Modules Import M
 - PrimeVue 4.x with `Aura` and the `Modx` manager theme
 - Central theme switch: system setting `vuetools.theme` + `getActiveTheme()` from `@vuetools/useTheme`
 - PrimeIcons 7.x
-- Composables: useApi, useLexicon, useModx, usePermission, usePrimeVueLocale, getActiveTheme
+- Composables: useApi, useDebug, useLexicon, useModx, usePermission, usePrimeVueLocale, getActiveTheme
 
 ## Requirements
 
@@ -89,6 +89,7 @@ export default defineConfig({
         'pinia',
         'primevue',
         '@vuetools/useApi',
+        '@vuetools/useDebug',
         '@vuetools/useLexicon',
         '@vuetools/useModx',
         '@vuetools/usePermission',
