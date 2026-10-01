@@ -20,9 +20,9 @@ $config = [
     // Menus
     'menus' => [],
 
-    // Events for plugins
+    // Informational only — plugin events are defined in _build/elements/plugins.php
     'events' => [
-        'OnManagerPageInit',
+        'OnManagerPageBeforeRender',
     ],
 ];
 

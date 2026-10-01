@@ -236,8 +236,6 @@ if (file_exists($settingsFile)) {
     }
 }
 
-// Note: OnManagerPageInit is a standard MODX event, no need to create it
-
 // === Set package attributes ===
 out('Setting package attributes...');
 
