@@ -377,7 +377,7 @@ if (has('my_key')) { ... }
 const allMyKeys = getByPrefix('my_component_')
 ```
 
-**Важно:** лексиконы читаются из `window.MODx.lang`. Топик нужно загрузить в контроллере:
+**Важно:** лексиконы читаются из `window.MODx.lang`. Топик нужно загрузить в контроллере (`getLanguageTopics()`). Динамической загрузки топиков из JS (`load()`) в публичном API нет.
 
 ```php
 public function getLanguageTopics()
