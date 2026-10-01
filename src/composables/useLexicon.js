@@ -5,6 +5,16 @@
  */
 
 /**
+ * Escape a string for use inside a RegExp source.
+ *
+ * @param {string} value
+ * @returns {string}
+ */
+function escapeRegExp(value) {
+  return String(value).replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+}
+
+/**
  * Create lexicon accessor
  *
  * @param {Object} options
@@ -33,12 +43,14 @@ export function useLexicon(options = {}) {
       return key
     }
 
-    // Replace parameters
+    // Replace parameters (literal values; :name uses a word boundary, #67)
     if (Object.keys(params).length > 0) {
       Object.entries(params).forEach(([paramKey, paramValue]) => {
-        value = value.replace(new RegExp(`\\[\\[\\+${paramKey}\\]\\]`, 'g'), paramValue)
-        value = value.replace(new RegExp(`\\{${paramKey}\\}`, 'g'), paramValue)
-        value = value.replace(new RegExp(`:${paramKey}`, 'g'), paramValue)
+        const escaped = escapeRegExp(paramKey)
+        const literal = () => String(paramValue)
+        value = value.replace(new RegExp(`\\[\\[\\+${escaped}\\]\\]`, 'g'), literal)
+        value = value.replace(new RegExp(`\\{${escaped}\\}`, 'g'), literal)
+        value = value.replace(new RegExp(`:${escaped}\\b`, 'g'), literal)
       })
     }
 
