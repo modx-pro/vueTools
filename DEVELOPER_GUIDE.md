@@ -434,17 +434,24 @@ import { useApi } from '@vuetools/useApi'
 
 const { get, post, put, delete: del } = useApi()
 
-// GET запрос
+// GET — params в query ($_GET)
 const users = await get('security/user/getlist', { limit: 20 })
 
-// POST запрос
+// POST — FormData в теле ($_POST); action / HTTP_MODAUTH в query
 const result = await post('security/user/create', {
   username: 'newuser',
   email: 'user@example.com'
 })
+
+// PUT / DELETE — params в query ($_GET): PHP не заполняет $_POST для этих методов
+await put('security/user/update', { id: 1, email: 'a@b.c' })
+await del('security/user/delete', { id: 1 })
+
+// JSON-тело: params дублируются в query, иначе процессор MODX их не увидит
+await post('security/user/create', { username: 'x' }, { json: true })
 ```
 
-**Примечание:** клиент рассчитан на стандартный connector MODX (`?action=processor/path`). Если у компонента свой роутер, заведите локальный `request.js` (см. ниже).
+**Примечание:** `modConnectorResponse` читает свойства процессора из `$_GET` + `$_POST`. Тело `application/json` и тела PUT/DELETE в `$_POST` не попадают. Клиент рассчитан на стандартный connector (`?action=processor/path`). Если у компонента свой роутер, заведите локальный `request.js` (см. ниже).
 
 ---
 
