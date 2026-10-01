@@ -120,9 +120,10 @@ class VueCore
     }
 
     /**
-     * Include PrimeVue CSS styles
+     * Include VueTools CSS (PrimeIcons scoped under .vueApp).
      *
-     * Styles are prefixed with .vueApp for isolation from ExtJS
+     * PrimeVue component styles are injected at runtime by @primeuix/styled
+     * and are not prefixed with .vueApp (#53).
      *
      * @return bool
      */
@@ -134,7 +135,7 @@ class VueCore
 
         $vendorUrl = $this->assetsUrl . 'vendor/';
 
-        // VueTools styles (PrimeVue theme + PrimeIcons)
+        // PrimeIcons rules are PostCSS-prefixed with .vueApp in the vendor build
         $this->modx->regClientCSS($vendorUrl . 'vuetools.css' . $this->assetQuery('vendor/vuetools.css'));
 
         $this->stylesIncluded = true;

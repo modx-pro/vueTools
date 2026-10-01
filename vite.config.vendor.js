@@ -6,7 +6,8 @@ import prefixSelector from 'postcss-prefix-selector'
 // Get build target from env
 const target = process.env.BUILD_TARGET || 'all'
 
-// CSS config with .vueApp prefix isolation
+// CSS: PostCSS prefixes PrimeIcons under .vueApp. PrimeVue component styles
+// come from @primeuix/styled at runtime and stay global (#53).
 const cssConfig = {
   postcss: {
     plugins: [
