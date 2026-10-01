@@ -1,7 +1,10 @@
 /**
  * useApi composable
  *
- * HTTP client for working with MODX API
+ * HTTP client for working with MODX connector API.
+ * Processor properties come from PHP $_GET + $_POST only
+ * (modConnectorResponse). JSON bodies and PUT/DELETE bodies do not
+ * populate $_POST — those paths put params in the query string (#52).
  */
 
 /**
@@ -50,51 +53,70 @@ export function useApi(options = {}) {
   }
 
   /**
+   * Append params to FormData for classic POST ($_POST).
+   *
+   * @param {Object} params
+   * @returns {FormData}
+   */
+  function toFormData(params) {
+    const formData = new FormData()
+    Object.entries(params).forEach(([key, value]) => {
+      if (value === null || value === undefined) {
+        return
+      }
+      if (Array.isArray(value)) {
+        value.forEach((v, i) => formData.append(`${key}[${i}]`, v))
+      } else if (typeof value === 'object' && !(value instanceof File)) {
+        formData.append(key, JSON.stringify(value))
+      } else {
+        formData.append(key, value)
+      }
+    })
+    return formData
+  }
+
+  /**
    * Make HTTP request
    *
    * @param {string} action - Processor action
    * @param {Object} params - Request parameters
-   * @param {Object} options - Fetch options
+   * @param {Object} options - Fetch options; `json: true` sends JSON body and
+   *   also puts params in the query string for MODX processors
    * @returns {Promise<ApiResponse>}
    */
   async function request(action, params = {}, options = {}) {
-    const method = options.method || 'GET'
-    const isGet = method.toUpperCase() === 'GET'
+    const {
+      method: methodOption = 'GET',
+      json = false,
+      headers: extraHeaders = {},
+      ...fetchRest
+    } = options
+
+    const method = String(methodOption).toUpperCase()
+    const isGet = method === 'GET'
+    // POST + FormData fills $_POST. Everything else must use $_GET for MODX.
+    const paramsInQuery = isGet || json || method !== 'POST'
 
     const fetchOptions = {
       method,
       headers: {
-        'Accept': 'application/json',
-        ...options.headers
+        Accept: 'application/json',
+        ...extraHeaders
       },
       credentials: 'same-origin',
-      ...options
+      ...fetchRest
     }
 
-    let url
-    if (isGet) {
-      url = buildUrl(action, params)
-    } else {
-      url = buildUrl(action)
+    const url = paramsInQuery ? buildUrl(action, params) : buildUrl(action)
 
-      if (options.json) {
+    if (!isGet) {
+      if (json) {
         fetchOptions.headers['Content-Type'] = 'application/json'
         fetchOptions.body = JSON.stringify(params)
-      } else {
-        const formData = new FormData()
-        Object.entries(params).forEach(([key, value]) => {
-          if (value !== null && value !== undefined) {
-            if (Array.isArray(value)) {
-              value.forEach((v, i) => formData.append(`${key}[${i}]`, v))
-            } else if (typeof value === 'object' && !(value instanceof File)) {
-              formData.append(key, JSON.stringify(value))
-            } else {
-              formData.append(key, value)
-            }
-          }
-        })
-        fetchOptions.body = formData
+      } else if (method === 'POST') {
+        fetchOptions.body = toFormData(params)
       }
+      // PUT/DELETE: params already in query; no body required for MODX
     }
 
     const response = await fetch(url, fetchOptions)
@@ -122,24 +144,25 @@ export function useApi(options = {}) {
   }
 
   /**
-   * POST request
+   * POST request (FormData → $_POST). Pass `{ json: true }` for JSON body;
+   * params then also go in the query string for MODX.
    */
   async function post(action, params = {}, options = {}) {
     return request(action, params, { method: 'POST', ...options })
   }
 
   /**
-   * PUT request
+   * PUT request — params in query string (MODX $_GET)
    */
   async function put(action, params = {}, options = {}) {
     return request(action, params, { method: 'PUT', ...options })
   }
 
   /**
-   * DELETE request
+   * DELETE request — params in query string (MODX $_GET)
    */
-  async function del(action, params = {}) {
-    return request(action, params, { method: 'DELETE' })
+  async function del(action, params = {}, options = {}) {
+    return request(action, params, { method: 'DELETE', ...options })
   }
 
   return {
