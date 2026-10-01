@@ -26,6 +26,32 @@ export function useApi(options = {}) {
   const authToken = options.authToken || window.MODx?.siteId || ''
 
   /**
+   * Append a param value to URLSearchParams (align with FormData POST, #64).
+   *
+   * @param {URLSearchParams} search
+   * @param {string} key
+   * @param {*} value
+   */
+  function appendQueryParam(search, key, value) {
+    if (value === null || value === undefined) {
+      return
+    }
+    if (Array.isArray(value)) {
+      value.forEach((v, i) => {
+        if (v !== null && v !== undefined) {
+          search.set(`${key}[${i}]`, String(v))
+        }
+      })
+      return
+    }
+    if (typeof value === 'object' && !(value instanceof File)) {
+      search.set(key, JSON.stringify(value))
+      return
+    }
+    search.set(key, String(value))
+  }
+
+  /**
    * Build URL with parameters
    *
    * @param {string} action - Processor action
@@ -41,9 +67,7 @@ export function useApi(options = {}) {
     }
 
     Object.entries(params).forEach(([key, value]) => {
-      if (value !== null && value !== undefined) {
-        url.searchParams.set(key, String(value))
-      }
+      appendQueryParam(url.searchParams, key, value)
     })
 
     return url.toString()
