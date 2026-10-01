@@ -48,7 +48,15 @@ export function getThemeName(name) {
  * @returns {{ theme: { preset: object, options?: object } }}
  */
 export function getActiveTheme(name) {
-  return THEME_REGISTRY[getThemeName(name)]
+  const entry = THEME_REGISTRY[getThemeName(name)]
+  const theme = entry.theme
+  // Copy so mutating theme.options cannot alter the shared registry (#66)
+  return {
+    theme: {
+      preset: theme.preset,
+      ...(theme.options != null ? { options: { ...theme.options } } : {})
+    }
+  }
 }
 
 /**
