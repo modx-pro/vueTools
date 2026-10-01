@@ -54,21 +54,29 @@ export function useApi(options = {}) {
    *
    * @param {string} action - Processor action
    * @param {Object} params - Request parameters
-   * @param {Object} options - Fetch options
+   * @param {Object} options - Fetch options (`method`, `json`, `headers`, …)
    * @returns {Promise<ApiResponse>}
    */
   async function request(action, params = {}, options = {}) {
-    const method = options.method || 'GET'
-    const isGet = method.toUpperCase() === 'GET'
+    const {
+      method: methodOption = 'GET',
+      json = false,
+      headers: extraHeaders = {},
+      ...fetchRest
+    } = options
 
+    const method = String(methodOption).toUpperCase()
+    const isGet = method === 'GET'
+
+    // Merge headers first; do not spread raw `options` after — that wiped Accept (#63)
     const fetchOptions = {
       method,
       headers: {
-        'Accept': 'application/json',
-        ...options.headers
+        Accept: 'application/json',
+        ...extraHeaders
       },
       credentials: 'same-origin',
-      ...options
+      ...fetchRest
     }
 
     let url
@@ -77,7 +85,7 @@ export function useApi(options = {}) {
     } else {
       url = buildUrl(action)
 
-      if (options.json) {
+      if (json) {
         fetchOptions.headers['Content-Type'] = 'application/json'
         fetchOptions.body = JSON.stringify(params)
       } else {
