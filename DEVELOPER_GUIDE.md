@@ -326,12 +326,14 @@ import { useModx } from '@vuetools/useModx'
 import { usePermission } from '@vuetools/usePermission'
 
 const { _ } = useLexicon()
-const { modx, config } = useModx()
-const { hasPermission } = usePermission()
+const { config, siteId } = useModx()
+const { can } = usePermission()
 
 // Ваш код компонента
 const items = ref([])
-const canEdit = computed(() => hasPermission('my_component_edit'))
+const canEdit = computed(() => can('my_component_edit'))
+// В <script>: config и siteId — computed ref → config.value / siteId.value
+// В template ref разворачивается сам: {{ siteId }}
 </script>
 
 <template>
@@ -388,41 +390,45 @@ public function getLanguageTopics()
 
 ### useModx
 
-Глобальный объект MODX.
+Доступ к конфигурации и хелперам вокруг `window.MODx`. Поле `modx` из composable не возвращается — сам объект берите из `window.MODx`.
 
 ```javascript
 import { useModx } from '@vuetools/useModx'
 
-const { modx, config, siteId } = useModx()
+const { config, siteId, hasPermission, fireEvent } = useModx()
 
-// Доступ к конфигурации
-const assetsUrl = config.assets_url
-const connectorUrl = config.connector_url
+// В <script setup> config и siteId — computed ref
+const assetsUrl = config.value.assets_url
+const connectorUrl = config.value.connector_url
+console.log(siteId.value) // "modx123..."
 
-// MODX Site ID для авторизации API
-console.log(siteId) // "modx123..."
+// Право через useModx (то же, что window.MODx.perm)
+if (hasPermission('my_component_edit')) { ... }
 
-// Полный объект MODx
-modx.msg.alert('Title', 'Message')
+// Алерт ExtJS / событие MODX
+window.MODx?.msg?.alert('Title', 'Message')
+fireEvent('myExtra:reload', { id: 1 })
 ```
+
+В template Vue сам разворачивает ref: `{{ siteId }}`, `:src="config.assets_url"`.
 
 ### usePermission
 
-Проверка прав пользователя.
+Проверка прав пользователя. Имена API: `can`, `canAny`, `canAll` (не `hasPermission` — то имя у `useModx`).
 
 ```javascript
 import { usePermission } from '@vuetools/usePermission'
 
-const { hasPermission, hasAnyPermission, hasAllPermissions } = usePermission()
+const { can, canAny, canAll } = usePermission()
 
-// Проверить одно право
-if (hasPermission('my_component_edit')) { ... }
+// Одно право
+if (can('my_component_edit')) { ... }
 
-// Проверить любое из прав
-if (hasAnyPermission(['edit', 'save', 'delete'])) { ... }
+// Любое из прав
+if (canAny(['edit', 'save', 'delete'])) { ... }
 
-// Проверить все права
-if (hasAllPermissions(['view', 'edit'])) { ... }
+// Все права
+if (canAll(['view', 'edit'])) { ... }
 ```
 
 ### useApi (базовый)
