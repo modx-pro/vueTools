@@ -64,6 +64,7 @@ class VueCore
         $piniaQ = $this->assetQuery('vendor/pinia.min.js');
         $primevueQ = $this->assetQuery('vendor/primevue.min.js');
         $useApiQ = $this->assetQuery('composables/useApi.min.js');
+        $useEventBusQ = $this->assetQuery('composables/useEventBus.min.js');
         $useLexiconQ = $this->assetQuery('composables/useLexicon.min.js');
         $useModxQ = $this->assetQuery('composables/useModx.min.js');
         $usePermissionQ = $this->assetQuery('composables/usePermission.min.js');
@@ -79,6 +80,7 @@ class VueCore
                 'vuetools' => $vendorUrl . 'primevue.min.js' . $primevueQ,
                 'vuetools/theme' => $vendorUrl . 'primevue.min.js' . $primevueQ,
                 '@vuetools/useApi' => $composablesUrl . 'useApi.min.js' . $useApiQ,
+                '@vuetools/useEventBus' => $composablesUrl . 'useEventBus.min.js' . $useEventBusQ,
                 '@vuetools/useLexicon' => $composablesUrl . 'useLexicon.min.js' . $useLexiconQ,
                 '@vuetools/useModx' => $composablesUrl . 'useModx.min.js' . $useModxQ,
                 '@vuetools/usePermission' => $composablesUrl . 'usePermission.min.js' . $usePermissionQ,

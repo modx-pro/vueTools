@@ -8,6 +8,7 @@ export default defineConfig({
     lib: {
       entry: {
         'useApi': resolve(__dirname, 'src/composables/useApi.js'),
+        'useEventBus': resolve(__dirname, 'src/composables/useEventBus.js'),
         'useLexicon': resolve(__dirname, 'src/composables/useLexicon.js'),
         'useModx': resolve(__dirname, 'src/composables/useModx.js'),
         'usePermission': resolve(__dirname, 'src/composables/usePermission.js'),

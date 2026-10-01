@@ -21,6 +21,7 @@ VueTools отдаёт стек Vue 3 для компонентов MODX 3.x че
 | `useApi` | HTTP-клиент к стандартному connector API MODX |
 | `useModx` | Глобальный объект `MODx` |
 | `usePermission` | Проверка прав пользователя |
+| `useEventBus` | Лёгкий namespaced event bus между компонентами Extra |
 | `usePrimeVueLocale` | Локали PrimeVue для DataTable, DatePicker, Calendar (`de`, `en`, `es`, `fr`, `pl`, `ru`, `uk`) |
 | `getActiveTheme` (`@vuetools/useTheme`) | Центральная тема из `vuetools.theme` → `{ theme }` для `app.use(PrimeVue, …)` |
 
@@ -41,6 +42,7 @@ VueTools регистрирует Import Map в `<head>` страницы мен
     "vuetools": "/assets/components/vuetools/vendor/primevue.min.js",
     "vuetools/theme": "/assets/components/vuetools/vendor/primevue.min.js",
     "@vuetools/useApi": "/assets/components/vuetools/composables/useApi.min.js",
+    "@vuetools/useEventBus": "/assets/components/vuetools/composables/useEventBus.min.js",
     "@vuetools/useLexicon": "/assets/components/vuetools/composables/useLexicon.min.js",
     "@vuetools/useModx": "/assets/components/vuetools/composables/useModx.min.js",
     "@vuetools/usePermission": "/assets/components/vuetools/composables/usePermission.min.js",
@@ -237,6 +239,7 @@ export default defineConfig({
         'pinia',
         'primevue',
         '@vuetools/useApi',
+        '@vuetools/useEventBus',
         '@vuetools/useLexicon',
         '@vuetools/useModx',
         '@vuetools/usePermission',
@@ -424,6 +427,32 @@ if (hasAnyPermission(['edit', 'save', 'delete'])) { ... }
 // Проверить все права
 if (hasAllPermissions(['view', 'edit'])) { ... }
 ```
+
+### useEventBus
+
+Лёгкий namespaced event bus между компонентами и модулями Extra. Не заменяет Pinia: только события, без хранения состояния. Глобальные события без namespace не поддерживаются.
+
+```javascript
+import { useEventBus } from '@vuetools/useEventBus'
+
+// Listener (в setup компонента — подписка снимается при unmount)
+const bus = useEventBus('products')
+bus.on('updated', (product) => {
+  console.log('product updated', product)
+})
+
+// Emitter (другой компонент / store / модуль, тот же namespace)
+const bus = useEventBus('products')
+bus.emit('updated', { id: 1, name: 'Widget' })
+
+// Ручная отписка (вне setup или досрочно)
+const handler = (payload) => { /* ... */ }
+bus.on('updated', handler)
+bus.off('updated', handler)
+// или: const unsub = bus.on('updated', handler); unsub()
+```
+
+В Vite `external` добавьте `@vuetools/useEventBus` рядом с остальными `@vuetools/*`.
 
 ### useApi (базовый)
 
