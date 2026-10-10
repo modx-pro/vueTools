@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+- `useApi`: поддержка отправки токена авторизации в HTTP-заголовке `modAuth` (по умолчанию включена) и опция `authInQuery: false` для предотвращения утечки токена через URL query string в access-логи и заголовок Referer (#sec-token-leak)
+
+### Fixed
+- `useApi`: сохранение базового заголовка `Accept: application/json` при передаче пользовательских `options.headers`
+
 ## [1.2.1-pl] - 2026-09-24
 
 ### Changed

@@ -19,11 +19,15 @@
  * @param {Object} options
  * @param {string} options.baseUrl - Base connector URL
  * @param {string} options.authToken - MODX auth token (MODx.siteId)
+ * @param {boolean} [options.authInHeader=true] - Send modAuth token in HTTP headers
+ * @param {boolean} [options.authInQuery=true] - Send HTTP_MODAUTH in URL search params (legacy/fallback)
  * @returns {Object} API methods
  */
 export function useApi(options = {}) {
   const baseUrl = options.baseUrl || window.MODx?.config?.connector_url || '/connectors/'
   const authToken = options.authToken || window.MODx?.siteId || ''
+  const authInHeader = options.authInHeader ?? true
+  const authInQuery = options.authInQuery ?? true
 
   /**
    * Build URL with parameters
@@ -36,7 +40,7 @@ export function useApi(options = {}) {
     const url = new URL(baseUrl, window.location.origin)
     url.searchParams.set('action', action)
 
-    if (authToken) {
+    if (authToken && authInQuery) {
       url.searchParams.set('HTTP_MODAUTH', authToken)
     }
 
@@ -58,17 +62,27 @@ export function useApi(options = {}) {
    * @returns {Promise<ApiResponse>}
    */
   async function request(action, params = {}, options = {}) {
-    const method = options.method || 'GET'
-    const isGet = method.toUpperCase() === 'GET'
+    const {
+      method: methodOption = 'GET',
+      json = false,
+      headers: extraHeaders = {},
+      ...fetchRest
+    } = options
+
+    const method = String(methodOption).toUpperCase()
+    const isGet = method === 'GET'
+
+    const headers = {
+      Accept: 'application/json',
+      ...(authToken && authInHeader ? { modAuth: authToken } : {}),
+      ...extraHeaders
+    }
 
     const fetchOptions = {
       method,
-      headers: {
-        'Accept': 'application/json',
-        ...options.headers
-      },
+      headers,
       credentials: 'same-origin',
-      ...options
+      ...fetchRest
     }
 
     let url
@@ -77,7 +91,7 @@ export function useApi(options = {}) {
     } else {
       url = buildUrl(action)
 
-      if (options.json) {
+      if (json) {
         fetchOptions.headers['Content-Type'] = 'application/json'
         fetchOptions.body = JSON.stringify(params)
       } else {
